@@ -54,6 +54,15 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
+/* index.css ou votre fichier de styles */
+[data-theme="light"] .input::placeholder {
+  color: hsl(var(--nc) / 0.7);  /* neutral-content avec 70% d'opacité */
+}
+
+[data-theme="dark"] .input::placeholder {
+  color: hsl(var(--nc) / 0.8);  /* neutral-content avec 80% d'opacité */
+}
+
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
@@ -65,4 +74,8 @@ button:focus-visible {
   button {
     background-color: #f9f9f9;
   }
+
+  :is(h1, h2, h3, h4, h5, h6) {
+    color: red;
+}
 }

@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 
 const Logo = ({ src, alt }) => (
   <div className="logo">
-    <img src={src} alt={alt} className="h-10" />
+    <img src={src} alt={alt} className="h-16 bg-white rounded" />
   </div>
 );
 

@@ -11,33 +11,34 @@ const LoginForm = ({ onSubmit }) => {
   });
 
   return (
+    <>
     <div className="flex justify-center items-center mb-3">
       <div className="card w-96 bg-base-100 shadow-xl">
         <div className="card-body">
-          <h2 className="card-title flex justify-center">Se Connecter</h2>
+          <h2 className="card-title flex justify-center text-primary">Se connecter</h2>
           <Formik
             initialValues={{ email: '', password: '' }}
             validationSchema={validationSchema}
             onSubmit={onSubmit}
           >
             {() => (
-              <Form>
+              <Form className="space-y-4">
                 <FormField
                   label="Email"
                   type="email"
                   name="email"
-                  placeholder="Enter your email"
+                  placeholder="Votre email"
                   icon={
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 16 16"
                       fill="currentColor"
-                      className="h-4 w-4"
+                      className="h-4 w-4 text-base-content"
                     >
                       <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM12.735 14c.618 0 1.093-.561.872-1.139a6.002 6.002 0 0 0-11.215 0c-.22.578.254 1.139.872 1.139h9.47Z" />
                     </svg>
                   }
-                  className="input input-bordered w-full mb-4"
+                  className="input input-bordered w-full mb-4 text-base-content placeholder:text-neutral-content placeholder:opacity-70"
                 />
                 <FormField
                   label="Password"
@@ -49,7 +50,7 @@ const LoginForm = ({ onSubmit }) => {
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 16 16"
                       fill="currentColor"
-                      className="h-4 w-4"
+                      className="h-4 w-4 text-base-content"
                     >
                       <path
                         fillRule="evenodd"
@@ -58,15 +59,16 @@ const LoginForm = ({ onSubmit }) => {
                       />
                     </svg>
                   }
-                  className="input input-bordered w-full mb-4"
+                  className="input input-bordered w-full mb-4 "
                 />
-                <Button type="submit" text="Login" className="btn btn-primary w-full" />
+                <Button type="submit" text="Se connecter" className="btn btn-primary w-full" />
               </Form>
             )}
           </Formik>
         </div>
       </div>
     </div>
+  </>
   );
 };
 

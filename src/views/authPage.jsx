@@ -21,7 +21,7 @@ const AuthPage = () => {
       ) : (
         <SignupForm onSubmit={handleSubmit} />
       )}
-      <button onClick={toggleForm}>
+      <button onClick={toggleForm} className="btn btn-outline">
         {isLogin ? 'Pas de compte ? S\'inscrire maintenant !' : 'Vous avez déjà un compte ? Connecter vous !'}
       </button>
     </AuthTemplate>
