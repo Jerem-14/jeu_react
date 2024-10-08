@@ -3,13 +3,18 @@ import * as Yup from 'yup';
 import FormField from '../molecules/FormField';
 import Button from '../atoms/Button';
 import PropTypes from 'prop-types';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation  } from 'react-router-dom';
 
 const LoginForm = ({ onSubmit }) => {
   const validationSchema = Yup.object({
     email: Yup.string().email('Invalid email address').required('Required'), 
     password: Yup.string().min(6, 'Password too short').required('Required'),
   });
+
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const isVerified = queryParams.get('verified');
+  const isError = queryParams.get('error');
 
   const navigate = useNavigate();
 
@@ -19,6 +24,40 @@ const LoginForm = ({ onSubmit }) => {
 
   return (
     <>
+    {isVerified && (
+    <div role="alert" className="alert alert-success mb-4">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className="h-6 w-6 shrink-0 stroke-current"
+        fill="none"
+        viewBox="0 0 24 24">
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth="2"
+          d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      <span> Votre email a été vérifié avec succès ! Vous pouvez maintenant vous connecter.</span>
+    </div>
+  )}
+   {isError && (
+    <div role="alert" className="alert alert-error mb-4">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className="h-6 w-6 shrink-0 stroke-current"
+        fill="none"
+        viewBox="0 0 24 24">
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth="2"
+          d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      <span> Votre email n'a pu être vérifié ! Vous n'êtes pas l'utilisateur que vous prétendez être 👿.</span>
+    </div>
+  )
+      
+      }
     <div className="flex justify-center items-center mb-3">
       <div className="card w-96 bg-base-100 shadow-xl">
         <div className="card-body">
