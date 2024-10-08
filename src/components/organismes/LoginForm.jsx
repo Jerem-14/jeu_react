@@ -3,12 +3,19 @@ import * as Yup from 'yup';
 import FormField from '../molecules/FormField';
 import Button from '../atoms/Button';
 import PropTypes from 'prop-types';
+import { useNavigate } from 'react-router-dom';
 
 const LoginForm = ({ onSubmit }) => {
   const validationSchema = Yup.object({
     email: Yup.string().email('Invalid email address').required('Required'), 
     password: Yup.string().min(6, 'Password too short').required('Required'),
   });
+
+  const navigate = useNavigate();
+
+  const handleLoginRedirect = () => {
+    navigate('/signup'); // Redirige vers la route '/login'
+  };
 
   return (
     <>
@@ -68,6 +75,13 @@ const LoginForm = ({ onSubmit }) => {
         </div>
       </div>
     </div>
+    <button
+        className="btn btn-outline"
+        onClick={handleLoginRedirect}
+      >
+        Pas de compte ? S'inscrire maintenant !
+      </button>
+    
   </>
   );
 };

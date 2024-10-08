@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-d
 import LoginForm from './components/organismes/LoginForm';
 import SignupForm from './components/organismes/SignupForm';
 import AuthPage from './views/authPage';
+import Accueil from './views/Accueil';
 import Header from './components/organismes/Header';
 import Home from './views/Home';
 import Profile from './views/Profile';
@@ -48,7 +49,7 @@ function App() {
               <>
                 <Route path="/login" element={<LoginForm onSubmit={handleLogin} />} />
                 <Route path="/signup" element={<SignupForm />} />
-                <Route path="/" element={<AuthPage onSubmit={handleLogin} />} />
+                <Route path="/" element={<Accueil />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </>
             )}

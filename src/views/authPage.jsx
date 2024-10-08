@@ -5,13 +5,22 @@ import { useState } from 'react';
 
 const AuthPage = () => {
   const [isLogin, setIsLogin] = useState(true);
+  const [setIsAuthenticated] = useState(false);
 
   const toggleForm = () => {
     setIsLogin(!isLogin);
   };
 
-  const handleSubmit = (data) => {
-    console.log('Form submitted:', data);
+  const hardcodedEmail = "test@test.fr";
+  const hardcodedPassword = "azerty";
+
+  const handleSubmit = (values) => {
+    const { email, password } = values;
+    if (email === hardcodedEmail && password === hardcodedPassword) {
+      setIsAuthenticated(true);
+    } else {
+      alert("Identifiants incorrects. Veuillez réessayer.");
+    }
   };
 
   return (

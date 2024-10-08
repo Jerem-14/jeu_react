@@ -3,6 +3,7 @@ import * as Yup from 'yup';
 import FormField from '../molecules/FormField';
 import Button from '../atoms/Button';
 import PropTypes from 'prop-types';
+import { useNavigate } from 'react-router-dom';
 
 const SignupForm = ({ onSubmit }) => {
   const validationSchema = Yup.object({
@@ -16,7 +17,14 @@ const SignupForm = ({ onSubmit }) => {
       .required('Required'),
   });
 
+  const navigate = useNavigate();
+
+  const handleLoginRedirect = () => {
+    navigate('/login'); // Redirige vers la route '/login'
+  };
+
   return (
+    <>
     <div className="flex justify-center items-center mb-3">
       <div className="card w-96 bg-base-100 shadow-xl">
         <div className="card-body">
@@ -141,6 +149,14 @@ const SignupForm = ({ onSubmit }) => {
     </div>
       </div>
     </div>
+
+<button
+className="btn btn-outline"
+onClick={handleLoginRedirect}
+>
+Vous avez déjà un compte ? Connecter vous !
+</button>
+</>
   );
 };
 
