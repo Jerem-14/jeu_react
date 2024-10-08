@@ -4,11 +4,13 @@ import FormField from '../molecules/FormField';
 import Button from '../atoms/Button';
 import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import UserService from '../../services/UserService';
 
 const SignupForm = ({ onSubmit }) => {
   const validationSchema = Yup.object({
-    prenom: Yup.string().required('Required'),
-    nom: Yup.string().required('Required'),
+    firstname: Yup.string().required('Required'),
+    lastname: Yup.string().required('Required'),
     username: Yup.string().required('Required'),
     email: Yup.string().email('Invalid email address').required('Required'),
     password: Yup.string().min(6, 'Password too short').required('Required'),
@@ -19,8 +21,9 @@ const SignupForm = ({ onSubmit }) => {
 
   const navigate = useNavigate();
 
+ 
   const handleLoginRedirect = () => {
-    navigate('/login'); // Redirige vers la route '/login'
+    navigate('/login'); 
   };
 
   return (
@@ -30,7 +33,7 @@ const SignupForm = ({ onSubmit }) => {
         <div className="card-body">
           <h2 className="card-title flex justify-center text-primary">S'inscrire</h2>
     <Formik
-      initialValues={{ email: '', password: '', confirmPassword: '' }}
+      initialValues={{ email: '', password: '', confirmPassword: '', lastname: '', firstname: '', username: '' }}
       validationSchema={validationSchema}
       onSubmit={onSubmit}
     >
@@ -39,7 +42,7 @@ const SignupForm = ({ onSubmit }) => {
           <FormField
             label="Prénom"
             type="text"
-            name="prenom"
+            name="firstname"
             placeholder="Saisisser votre Prénom"
             icon={
               <svg
@@ -55,7 +58,7 @@ const SignupForm = ({ onSubmit }) => {
           <FormField
             label="Nom"
             type="text"
-            name="nom"
+            name="lastname"
             placeholder="Saisisser votre Nom"
             icon={
               <svg
@@ -161,6 +164,6 @@ Vous avez déjà un compte ? Connecter vous !
 };
 
 SignupForm.propTypes = {
-    onSubmit: PropTypes.func.isRequired, 
+    onSubmit: PropTypes.any.isRequired, 
 };
 export default SignupForm;

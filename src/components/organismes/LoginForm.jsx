@@ -14,7 +14,7 @@ const LoginForm = ({ onSubmit }) => {
   const navigate = useNavigate();
 
   const handleLoginRedirect = () => {
-    navigate('/signup'); // Redirige vers la route '/login'
+    navigate('/signup'); 
   };
 
   return (
