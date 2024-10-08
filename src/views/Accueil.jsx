@@ -11,8 +11,8 @@ const Accueil = () => {
 
   return (
     <div className="flex flex-col justify-center items-center bg-base-200">
-      <h1 className="text-3xl font-bold mb-4 text-base-content">Bienvenue sur notre site</h1>
-      <p className="mb-8 text-base-content">Veuillez vous connecter pour accéder à votre compte.</p>
+      <h1 className="text-3xl font-bold mb-4 text-base-content">Bienvenue sur Meme-on-rie</h1>
+      <p className="mb-8 text-base-content">Veuillez vous connecter pour accéder à l'application.</p>
 
       {/* Bouton pour rediriger vers la page de connexion */}
       <button

@@ -1,46 +1,47 @@
 import './App.css';
-import { useState } from 'react';
-import { BrowserRouter as Router, Route, Routes, Navigate, useNavigate } from 'react-router-dom';
+import { useContext } from 'react';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import LoginForm from './components/organismes/LoginForm';
 import SignupForm from './components/organismes/SignupForm';
-import AuthPage from './views/authPage';
 import Accueil from './views/Accueil';
 import Header from './components/organismes/Header';
 import Home from './views/Home';
 import Profile from './views/Profile';
 import Settings from './views/Settings';
 import UserService from './services/UserService';
-
+import { GlobalContext } from './contexts/GlobalContext';
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const { token, saveToken, isAuthenticated, isAuthResolved } = useContext(GlobalContext);
 
+  
 
-  const handleLogin = async ({email, password}) => {
-    
+  const handleLogin = async ({ email, password }) => {
     try {
-      const response = await UserService.login({email, password});
-      if (response.success) {alert("Connexion reussi.");
-        setIsAuthenticated(true);
-
+      const response = await UserService.login({ email, password });
+      console.log("Réponse de l'API login:", response);
+      if (response.success) {
+        alert("Connexion réussie.");
+        saveToken(response.token); // Sauvegarde le token dans le contexte global
       } else {
         alert(response.error || "Une erreur est survenue.");
       }
     } catch (error) {
-      console.error("Erreur d'inscription :", error);
+      console.error("Erreur de connexion :", error);
     }
   };
 
   const handleLogout = () => {
-    setIsAuthenticated(false);
+    console.log("Déconnexion effectuée, suppression du token.");
+    saveToken(null); // Réinitialisation du token (déconnexion)
   };
 
   const handleSignup = async (userData) => {
     try {
       const response = await UserService.register(userData);
+      console.log("Réponse de l'API signup:", response);
       if (response.success) {
         alert("Inscription réussie. Vous pouvez maintenant vous connecter.");
-        Navigate
       } else {
         alert(response.error || "Une erreur est survenue.");
       }
@@ -49,17 +50,27 @@ function App() {
     }
   };
 
+  // Vérifie si l'authentification est résolue avant d'afficher les routes
+  if (!isAuthResolved) {
+    console.log("En attente de résolution de l'état d'authentification...");
+    return <div>Chargement...</div>;
+  }
+
+  console.log("Token actuel:", token);
+  console.log("Utilisateur est-il authentifié ?", isAuthenticated());
+
   return (
     <Router>
       <div className="min-h-screen bg-base-200">
-      <Header 
-          isAuthenticated={isAuthenticated} 
+        <Header 
+          isAuthenticated={isAuthenticated()} 
           onLogout={handleLogout} 
         />
         <main className="container mx-auto px-4 pt-4">
           <Routes>
-            {isAuthenticated ? (
+            {isAuthenticated() ? (
               <>
+                {/* Routes protégées */}
                 <Route path="/" element={<Home />} />
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/settings" element={<Settings />} />
@@ -67,8 +78,9 @@ function App() {
               </>
             ) : (
               <>
+                {/* Routes publiques */}
                 <Route path="/login" element={<LoginForm onSubmit={handleLogin} />} />
-                <Route path="/signup" element={<SignupForm onSubmit={handleSignup}/>} />
+                <Route path="/signup" element={<SignupForm onSubmit={handleSignup} />} />
                 <Route path="/" element={<Accueil />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </>
