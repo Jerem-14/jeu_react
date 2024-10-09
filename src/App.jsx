@@ -22,7 +22,9 @@ function App() {
       console.log("Réponse de l'API login:", response);
       if (response.success) {
         alert("Connexion réussie.");
-        saveToken(response.token); // Sauvegarde le token dans le contexte global
+        saveToken(response.data.token); // Sauvegarde le token dans le contexte global
+        console.log("response token :", response.data.token);
+        
       } else {
         alert(response.error || "Une erreur est survenue.");
       }

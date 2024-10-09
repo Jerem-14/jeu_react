@@ -6,24 +6,24 @@ export const GlobalProvider = ({ children }) => {
     const [token, setToken] = useState(null); 
     const [isAuthResolved, setIsAuthResolved] = useState(false);
 
-    // Au montage, vérifie si un token est présent dans sessionStorage
+    // Au montage, vérifie si un token est présent dans localStorage
     useEffect(() => {
-        const savedToken = sessionStorage.getItem("token");
-        console.log("Token récupéré depuis sessionStorage au montage:", savedToken);
+        const savedToken = localStorage.getItem("token");
+        console.log("Token récupéré depuis localStorage au montage:", savedToken);
         if (savedToken) {
             setToken(savedToken);
         }
         setIsAuthResolved(true);
     }, []);
 
-    // Sauvegarde ou supprime le token dans sessionStorage à chaque mise à jour
+    // Sauvegarde ou supprime le token dans localStorage à chaque mise à jour
     useEffect(() => {
         if (token) {
-            sessionStorage.setItem("token", token);
-            console.log("Token sauvegardé dans sessionStorage:", token);
+            localStorage.setItem("token", token);
+            console.log("Token sauvegardé dans localStorage:", token);
         } else {
-            sessionStorage.removeItem("token");
-            console.log("Token supprimé de sessionStorage");
+            localStorage.removeItem("token");
+            console.log("Token supprimé de localStorage");
         }
     }, [token]);
 
