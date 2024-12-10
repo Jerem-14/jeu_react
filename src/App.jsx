@@ -6,6 +6,7 @@ import SignupForm from './components/organismes/SignupForm';
 import Accueil from './views/Accueil';
 import Header from './components/organismes/Header';
 import Home from './views/Home';
+import Media from './views/Media';
 import Profile from './views/Profile';
 import Settings from './views/Settings';
 import UserService from './services/UserService';
@@ -34,7 +35,7 @@ function App() {
   };
 
   const handleLogout = () => {
-    console.log("Déconnexion effectuée, suppression du token.");
+    console.log("Déconnexion effectuée, suppression du token.", response.data.token);
     saveToken(null); // Réinitialisation du token (déconnexion)
   };
 
@@ -74,6 +75,7 @@ function App() {
               <>
                 {/* Routes protégées */}
                 <Route path="/" element={<Home />} />
+                <Route path="/media" element={<Media />} />
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/settings" element={<Settings />} />
                 <Route path="*" element={<Navigate to="/" replace />} />

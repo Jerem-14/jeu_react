@@ -22,7 +22,7 @@ import { useLocation } from 'react-router-dom';
          {showNavbar && (
           <>
             <Navbar />
-            <Button onClick={onLogout} text="Déconnexion" />
+            <Button type="button" text="Déconnexion" onClick={onLogout} />
           </>
         )}
         <Toggle />
