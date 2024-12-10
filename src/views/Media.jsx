@@ -36,7 +36,7 @@ const MediaUploadForm = () => {
             <input
               type="file"
               onChange={(e) => setFile(e.target.files[0])}
-              className="file-input file-input-bordered w-full"
+              className="file-input file-input-bordered w-full text-base-content bg-base-200" 
               accept="image/*,video/*"
             />
           </div>
@@ -49,7 +49,7 @@ const MediaUploadForm = () => {
               placeholder="Add tags (comma separated)"
               value={tags}
               onChange={(e) => setTags(e.target.value)}
-              className="input input-bordered w-full"
+              className="input input-bordered w-full text-base-content bg-base-200 placeholder:text-base-content/70"
             />
           </div>
           <button 
@@ -109,7 +109,7 @@ const MediaGallery = () => {
           <select 
             value={filter} 
             onChange={(e) => setFilter(e.target.value)}
-            className="select select-bordered w-full max-w-xs"
+            className="select select-bordered w-full max-w-xs text-base-content bg-base-200 placeholder:text-base-content/70"
           >
             <option value="all">All</option>
             <option value="image">Images</option>

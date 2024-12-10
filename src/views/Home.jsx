@@ -22,7 +22,7 @@ const Home = () => {
                 value={roomName}
                 onChange={(e) => setRoomName(e.target.value)}
                 placeholder="Enter room name"
-                className="input input-bordered w-64 mb-4"
+                className="input input-bordered w-64 mb-4 text-base-content bg-base-200 placeholder:text-base-content/70"
             />
             <div className="flex space-x-4">
                 <button onClick={handleCreateRoom} className="btn btn-primary">
