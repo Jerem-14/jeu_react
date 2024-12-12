@@ -25,6 +25,7 @@ function App() {
         alert("Connexion réussie.");
         saveToken(response.data.token); // Sauvegarde le token dans le contexte global
         console.log("response token :", response.data.token);
+        localStorage.setItem('userId', response.data.userId); // Store userIdcd
         
       } else {
         alert(response.error || "Une erreur est survenue.");

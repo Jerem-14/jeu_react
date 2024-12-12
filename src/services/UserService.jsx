@@ -107,11 +107,50 @@ class UserService {
     async getUserById(id) {
         try {
             const response = await this.api.get(`/users/${id}`);
+            console.log("User data response:", response);
+            return { success: true, data: response.data };
+        } catch (error) {
+            console.error("Error fetching user:", error);
+            return { 
+                success: false, 
+                error: error.response?.data?.error || 'Erreur lors de la récupération de l\'utilisateur'
+            };
+        }
+    }
+
+    async getGameStats(userId) {
+        try {
+          const response = await this.api.get(`/users/${userId}/stats`);
+          return { success: true, data: response.data };
+        } catch (error) {
+          return { 
+            success: false, 
+            error: 'Error fetching game statistics'
+          };
+        }
+    }
+
+    async getUserGames(userId) {
+        try {
+          const response = await this.api.get(`/users/${userId}/games`);
+          console.log("Games API response:", response);
+          return { success: true, data: response.data };
+        } catch (error) {
+          console.error("Error fetching games:", error);
+          return { 
+            success: false, 
+            error: error.response?.data?.error || 'Error fetching game history'
+          };
+        }
+    }
+    async updateUser(userId, userData) {
+        try {
+            const response = await this.api.patch(`/users/${userId}`, userData);
             return { success: true, data: response.data };
         } catch (error) {
             return { 
                 success: false, 
-                error: 'Erreur lors de la récupération de l\'utilisateur'
+                error: error.response?.data?.error || 'Error updating user'
             };
         }
     }
