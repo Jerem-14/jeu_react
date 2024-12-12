@@ -45,11 +45,12 @@ class UserService {
     async login({email, password}) {
         try {
             const response = await this.api.post('/login', { email, password });
-            if (response.data.token) {
-                this.setToken(response.data.token);
-                return { success: true };
+            if (response.data.data.token) {
+                this.setToken(response.data.data.token);
+                return { success: true, 
+                    data: response.data.data };
             }
-            return { success: false, error: response.data.error };
+            return { success: false, error: response.data.error || 'Login failed' };
         } catch (error) {
             return { 
                 success: false, 
