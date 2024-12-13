@@ -8,6 +8,7 @@ import Header from './components/organismes/Header';
 import Home from './views/Home';
 import Media from './views/Media';
 import Profile from './views/Profile';
+import GameRoom from './views/GameRoom';
 import Settings from './views/Settings';
 import UserService from './services/UserService';
 import { GlobalContext } from './contexts/GlobalContext';
@@ -79,6 +80,8 @@ function App() {
                 <Route path="/media" element={<Media />} />
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/settings" element={<Settings />} />
+                                
+                <Route path="/game/*" element={<GameRoom />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </>
             ) : (

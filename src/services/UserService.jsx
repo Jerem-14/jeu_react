@@ -47,6 +47,7 @@ class UserService {
             const response = await this.api.post('/login', { email, password });
             if (response.data.data.token) {
                 this.setToken(response.data.data.token);
+                localStorage.setItem('username', response.data.data.username);
                 return { success: true, 
                     data: response.data.data };
             }

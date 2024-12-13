@@ -1,17 +1,23 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+
 import { io } from 'socket.io-client';
 
 const socket = io('http://localhost:3000'); // Assurez-vous que l'URL correspond à votre serveur
 
 const Home = () => {
+  const navigate = useNavigate();
+
     const [roomName, setRoomName] = useState('');
 
     const handleCreateRoom = () => {
         socket.emit('createRoom', roomName);
+        navigate('/game/create');
     };
 
     const handleJoinRoom = () => {
         socket.emit('joinRoom', roomName);
+        navigate('/game/join');
     };
 
     return (
