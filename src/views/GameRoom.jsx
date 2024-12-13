@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, useLocation, Routes, Route } from 'react-router-dom';
+import { useNavigate, useLocation, Routes, Route, useParams } from 'react-router-dom';
 import { io } from 'socket.io-client';
 import GameService from '../services/GameService';
 
@@ -7,18 +7,17 @@ const socket = io('http://localhost:3000');
 
 const CreateGame = () => {
   const [gameState, setGameState] = useState(() => {
-    // Try to load saved state from localStorage
     const saved = localStorage.getItem('gameState');
     return saved ? JSON.parse(saved) : {
       roomId: '',
       isCreator: false,
       playerCount: 1,
       canStart: false,
-      joinedPlayer: null
+      joinedPlayer: null,
+      joinedPlayerId: null
     };
   });
 
-  // Save state to localStorage whenever it changes
   useEffect(() => {
     if (gameState.roomId) {
       localStorage.setItem('gameState', JSON.stringify(gameState));
@@ -34,7 +33,8 @@ const CreateGame = () => {
         isCreator: true,
         playerCount: 1,
         canStart: false,
-        joinedPlayer: null
+        joinedPlayer: null,
+        joinedPlayerId: null
       };
       setGameState(newState);
       socket.emit('createRoom', gameId);
@@ -44,35 +44,32 @@ const CreateGame = () => {
   };
 
   useEffect(() => {
-    // When a player joins the room
     socket.on('playerJoined', (data) => {
+      console.log('Player joined:', data);
       setGameState(prev => ({
         ...prev,
         playerCount: prev.playerCount + 1,
         canStart: true,
-        joinedPlayer: data.username  // Add the joined player's username
+        joinedPlayer: data.username,
+        joinedPlayerId: data.userId
       }));
     });
 
-    // Cleanup function
     return () => {
       socket.off('playerJoined');
     };
   }, []);
 
-  // Function to start the game
   const handleStartGame = async () => {
     if (gameState.canStart) {
       const result = await GameService.startGame(gameState.roomId);
       if (result.success) {
         socket.emit('startGame', gameState.roomId);
-        // Clear game state from localStorage when starting
         localStorage.removeItem('gameState');
       }
     }
   };
 
-  // Clear local storage when component unmounts
   useEffect(() => {
     return () => {
       localStorage.removeItem('gameState');
@@ -127,9 +124,11 @@ const CreateGame = () => {
         <div className="mt-8">
           {gameState.joinedPlayer ? (
             <>
-              <p className="text-base-content">
-                Le joueur <span className="font-bold">{gameState.joinedPlayer}</span> a rejoint la partie
-              </p>
+              <div className="alert alert-success">
+                <p className="text-base-content">
+                  Le joueur <span className="font-bold">{gameState.joinedPlayer}</span> ({gameState.joinedPlayerId}) a rejoint la partie !
+                </p>
+              </div>
               <button 
                 onClick={handleStartGame}
                 className="btn btn-success mt-4"
@@ -138,9 +137,45 @@ const CreateGame = () => {
               </button>
             </>
           ) : (
-            <p className="text-base-content">En attente du collègue...</p>
+            <div className="alert alert-info">
+              <p className="text-base-content">En attente d'un autre joueur...</p>
+            </div>
           )}
         </div>
+      </div>
+    </div>
+  );
+};
+
+// Component for players who joined the game
+const JoinedGame = () => {
+  const { roomId } = useParams();
+  const [waiting, setWaiting] = useState(true);
+  
+  useEffect(() => {
+    socket.on('gameStarted', () => {
+      setWaiting(false);
+      // Handle game start
+    });
+
+    return () => {
+      socket.off('gameStarted');
+    };
+  }, []);
+
+  return (
+    <div className="flex flex-col items-center justify-center min-h-screen p-4">
+      <div className="text-center space-y-4">
+        <h2 className="text-2xl font-bold text-base-content">Tu as rejoint la partie ! 🎮</h2>
+        {waiting ? (
+          <div className="alert alert-info">
+            <p>La partie est pleine, veuillez patienter le temps que le créateur la lance...</p>
+          </div>
+        ) : (
+          <div className="alert alert-success">
+            <p>La partie commence !</p>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -153,11 +188,10 @@ const JoinGame = () => {
   const joinRoom = async () => {
     const result = await GameService.joinGame(roomId);
     if (result.success) {
-      // Get the current user's username from localStorage or context
       const username = localStorage.getItem('username');
-      socket.emit('joinRoom', { roomId, username });
+      const userId = localStorage.getItem('userId');
+      socket.emit('joinRoom', { roomId, username, userId });
       
-      // Save joined game state
       const gameState = {
         roomId,
         isCreator: false,
@@ -166,7 +200,7 @@ const JoinGame = () => {
       };
       localStorage.setItem('gameState', JSON.stringify(gameState));
       
-      navigate(`/game/${roomId}/play`);
+      navigate(`/game/${roomId}/joined`);
     } else {
       console.error(result.error);
     }
@@ -198,6 +232,7 @@ const GameRoom = () => {
     <Routes>
       <Route path="/create" element={<CreateGame />} />
       <Route path="/join" element={<JoinGame />} />
+      <Route path="/:roomId/joined" element={<JoinedGame />} />
     </Routes>
   );
 };
