@@ -36,9 +36,20 @@ function App() {
     }
   };
 
-  const handleLogout = () => {
-    console.log("Déconnexion effectuée, suppression du token.", response.data.token);
-    saveToken(null); // Réinitialisation du token (déconnexion)
+  const handleLogout = async () => {
+    try {
+      const result = await UserService.logout();
+      if (result.success) {
+        saveToken(null);
+      localStorage.removeItem('userId'); // Also clear userId
+      localStorage.removeItem('username'); // Also clear username
+      }
+      else {
+        console.error('Logout failed:', result.error);
+      }
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
   };
 
   const handleSignup = async (userData) => {

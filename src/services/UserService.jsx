@@ -48,6 +48,7 @@ class UserService {
             if (response.data.data.token) {
                 this.setToken(response.data.data.token);
                 localStorage.setItem('username', response.data.data.username);
+                localStorage.setItem('userId', response.data.data.userId);
                 return { success: true, 
                     data: response.data.data };
             }
