@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Routes, Route, useNavigate, useParams } from 'react-router-dom';
 import { io } from 'socket.io-client';
 import GameService from '../services/GameService';
+import MemoryGame from '../views/MemoryGame';
 
 const socket = io('http://localhost:3000', {
   withCredentials: true,
@@ -104,18 +105,16 @@ const CreateGame = () => {
       console.log("Update game state result:", result);
       
       if (result.success) {
-        console.log("Emitting socket event...");
+        
         socket.emit('initiateGameStart', {
           gameId: gameState.gameId
         });
         
-        console.log("Setting game state to STARTING...");
         setGameState(prev => ({
           ...prev,
           gameStatus: GAME_STATES.STARTING
         }));
         
-        console.log("Setting up navigation timer...");
         setTimeout(() => {
           console.log("Navigating to game...");
           navigate(`/game/${gameState.gameId}/play`);
@@ -217,14 +216,19 @@ const JoinGame = () => {
   const [gameStatus, setGameStatus] = useState(GAME_STATES.INITIAL); // initial, waiting, starting
 
   useEffect(() => {
-    socket.on('gameStartConfirmed', ({ gameId }) => {
+    console.log("Setting up gameStartConfirmed listener");
+    
+    socket.on('gameStartConfirmed', (data) => {
+      console.log("Received gameStartConfirmed:", data);
       setGameStatus(GAME_STATES.STARTING);
       setTimeout(() => {
-        navigate(`/game/${gameId}/play`);
-      }, 4000);
+        console.log("Navigating to game play");
+        navigate(`/game/${data.gameId}/play`);
+      }, 4000); 
     });
-
+  
     return () => {
+      console.log("Cleaning up gameStartConfirmed listener");
       socket.off('gameStartConfirmed');
     };
   }, [navigate]);
@@ -302,7 +306,7 @@ const JoinGame = () => {
 };
 
 // Game Component
-const Game = () => {
+/* const Game = () => {
   const { gameId } = useParams();
   const [gameState, setGameState] = useState(null);
 
@@ -331,7 +335,7 @@ const Game = () => {
       </div>
     </div>
   );
-};
+}; */
 
 const GameRoom = () => {
   return (
@@ -339,7 +343,7 @@ const GameRoom = () => {
       <Route path="/" element={<GameChoice />} />
       <Route path="/create" element={<CreateGame />} />
       <Route path="/join" element={<JoinGame />} />
-      <Route path="/:gameId/play" element={<Game />} />
+      <Route path="/:gameId/play" element={<MemoryGame  />} />
     </Routes>
   );
 };
