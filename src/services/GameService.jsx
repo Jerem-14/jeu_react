@@ -53,6 +53,22 @@ class GameService {
             };
         }
     }
+// Dans GameService.jsx
+async updateGameState(gameId, action) {
+    try {
+      const response = await this.api.patch(`/game/${action}/${gameId}`, {
+        userId: localStorage.getItem('userId')
+      });
+      return { success: true, data: response.data };
+    } catch (error) {
+      return { 
+        success: false, 
+        error: error.response?.data?.error || 'Error updating game'
+      };
+    }
+  }
+
+  
 }
 
 export default new GameService();
