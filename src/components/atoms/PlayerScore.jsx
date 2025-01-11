@@ -1,19 +1,16 @@
 import PropTypes from 'prop-types';
 
 
-const PlayerScore = ({ score, isActive }) => {
+const PlayerScore = ({ score }) => {
     return (
-      <div className={`text-2xl font-bold ${
-        isActive ? 'text-primary' : 'text-base-content'
-      }`}>
+      <div className="text-2xl font-bold">
         Score: {score}
       </div>
     );
   };
 
   PlayerScore.propTypes = {
-    score: PropTypes.number.isRequired,
-    isActive: PropTypes.bool.isRequired
+    score: PropTypes.number.isRequired
   };
   
   export default PlayerScore;

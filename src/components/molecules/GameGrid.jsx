@@ -2,14 +2,18 @@ import PropTypes from 'prop-types';
 import MemoryCard from '../atoms/MemoryCard';
 
 const GameGrid = ({ cards, onCardClick }) => {
-    return (
+  console.log('Cartes reçues:', cards);  
+  return (
       <div className="grid grid-cols-8 gap-2">
         {cards.map((card, index) => (
           <MemoryCard
             key={index}
             media={card}
-            isFlipped={card.isFlipped || false}
-            onClick={() => onCardClick(index)}
+            isFlipped={card.isFlipped}
+            onClick={() => {
+              console.log('Clic sur carte dans la grille:', index);
+              onCardClick(index);
+          }}
           />
         ))}
       </div>

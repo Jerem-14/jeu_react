@@ -5,10 +5,13 @@ import GameService from '../services/GameService';
 import MemoryGame from '../views/MemoryGame';
 
 const socket = io('http://localhost:3000', {
-  withCredentials: true,
-  transports: ['websocket']
+  path: '/socket.io/',
+    transports: ['websocket', 'polling'],
+    cors: {
+        origin: "http://localhost:5173",
+        credentials: true
+    }
 });
-
 
 // Game states enum for better state management
 const GAME_STATES = {
@@ -45,6 +48,14 @@ const GameChoice = () => {
 
 // Create Game View
 const CreateGame = () => {
+
+console.log('Composant CreateGame monté');
+useEffect(() => {
+  console.log('CreateGame useEffect déclenché');
+  return () => {
+      console.log('CreateGame useEffect nettoyé');
+  };
+}, []);
   const navigate = useNavigate();
   const [gameState, setGameState] = useState({
     gameId: '',
@@ -54,74 +65,117 @@ const CreateGame = () => {
   });
 
   useEffect(() => {
-    socket.on('playerJoined', (data) => {
+    // Gérer la connexion socket
+    const handleConnect = () => {
+      console.log('Socket connecté !');
+    };
+
+    const handleConnectError = (error) => {
+      console.error('Erreur de connexion socket:', error);
+    };
+
+    const handleGameStateUpdate = (updatedState) => {
+      console.log('Mise à jour état du jeu reçue:', updatedState);
+      const currentUserId = localStorage.getItem('userId');
+      const otherPlayer = Object.values(updatedState.players || {})
+        .find(p => p.id !== currentUserId);
+
+      if (otherPlayer) {
+        console.log('Autre joueur détecté:', otherPlayer);
+      }
+
       setGameState(prev => ({
         ...prev,
-        playerJoined: true,
-        joinedPlayerName: data.userId,
+        gameId: updatedState.gameId || prev.gameId,
+        playerJoined: Object.keys(updatedState.players || {}).length > 1,
+        joinedPlayerName: otherPlayer?.id || prev.joinedPlayerName,
+        gameStatus: Object.keys(updatedState.players || {}).length > 1 
+          ? GAME_STATES.WAITING 
+          : prev.gameStatus
+      }));
+    };
+
+    const handleGameCreated = (initialState) => {
+      console.log('Partie créée:', initialState);
+      setGameState(prev => ({
+        ...prev,
+        gameId: initialState.gameId,
         gameStatus: GAME_STATES.WAITING
       }));
-    });
+    };
 
-    // Handle game start confirmation
-    socket.on('gameStartConfirmed', ({ gameId }) => {
+    const handleGameStartConfirmed = (data) => {
+      console.log('Démarrage de la partie confirmé:', data);
       setGameState(prev => ({
         ...prev,
         gameStatus: GAME_STATES.STARTING
       }));
       
-      // Navigate to game session after a brief delay
       setTimeout(() => {
-        navigate(`/game/${gameId}/play`);
-      }, 4000);
-    });
+        navigate(`/game/${data.gameId}/play`);
+      }, 2000);
+    };
 
+    socket.on('connect', handleConnect);
+    socket.on('connect_error', handleConnectError);
+    socket.on('gameStateUpdate', handleGameStateUpdate);
+    socket.on('gameCreated', handleGameCreated);
+    socket.on('gameStartConfirmed', handleGameStartConfirmed);
+
+    // Nettoyage
     return () => {
-      socket.off('playerJoined');
-      socket.off('gameStartConfirmed');
+      socket.off('connect', handleConnect);
+      socket.off('connect_error', handleConnectError);
+      socket.off('gameStateUpdate', handleGameStateUpdate);
+      socket.off('gameCreated', handleGameCreated);
+      socket.off('gameStartConfirmed', handleGameStartConfirmed);
     };
   }, [navigate]);
 
   const createRoom = async () => {
     try {
+      const userId = localStorage.getItem('userId');
+      const username = localStorage.getItem('username');
+
+      if (!username || !userId) {
+        console.error('Informations utilisateur manquantes');
+        return;
+      }
+
       const result = await GameService.createGame();
       if (result.success) {
         const gameId = result.data.gameId;
-        const userId = localStorage.getItem('userId');
-        const username = localStorage.getItem('username');
+        
+        console.log('Création partie avec:', { gameId, userId, username });
 
-        socket.emit('createRoom', gameId, userId, username);
-        setGameState(prev => ({ ...prev, gameId, gameStatus: GAME_STATES.WAITING  }));
+        socket.emit('createGame', {
+          gameId,
+          creator: {
+            id: userId,
+            username
+          }
+        });
       }
     } catch (error) {
-      console.error('Error creating game:', error);
+      console.error('Erreur création partie:', error);
     }
   };
 
   const startGame = async () => {
+    if (!gameState.gameId || !gameState.playerJoined) {
+      console.error('Impossible de démarrer: conditions non remplies');
+      return;
+    }
+
     try {
-      console.log("Starting game...");
       const result = await GameService.updateGameState(gameState.gameId, 'start');
-      console.log("Update game state result:", result);
-      
       if (result.success) {
-        
         socket.emit('initiateGameStart', {
           gameId: gameState.gameId
         });
-        
-        setGameState(prev => ({
-          ...prev,
-          gameStatus: GAME_STATES.STARTING
-        }));
-        
-        setTimeout(() => {
-          console.log("Navigating to game...");
-          navigate(`/game/${gameState.gameId}/play`);
-        }, 2000);
       }
     } catch (error) {
-      console.error('Error starting game:', error);
+      console.error('Erreur démarrage partie:', error);
     }
   };
 
@@ -240,10 +294,12 @@ const JoinGame = () => {
         const username = localStorage.getItem('username');
         const userId = localStorage.getItem('userId');
 
-        socket.emit('joinRoom', { 
-          roomId: gameId, 
-          username, 
-          userId 
+        socket.emit('joinGame', { 
+          gameId: gameId, 
+          player: {
+            id: userId,
+            username: username
+          }
         });
         
         setGameStatus(GAME_STATES.WAITING);

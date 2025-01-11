@@ -12,7 +12,7 @@ const GameBoard = ({ gameState, onMove }) => {
 
     return (
     <div className="game-board">
-      <PlayerInfo players={gameState.players} />
+      <PlayerInfo players={gameState.players} currentTurn={gameState.currentTurn} />
       <GameGrid 
         cards={gameState.cards} 
         onCardClick={onMove}
@@ -24,7 +24,7 @@ const GameBoard = ({ gameState, onMove }) => {
 
   GameBoard.propTypes = {
     gameState: PropTypes.shape({
-      players: PropTypes.arrayOf(
+      players: PropTypes.objectOf(
         PropTypes.shape({
           id: PropTypes.string.isRequired,
           username: PropTypes.string.isRequired,
@@ -36,6 +36,7 @@ const GameBoard = ({ gameState, onMove }) => {
       currentTurn: PropTypes.string.isRequired
     }).isRequired,
     onMove: PropTypes.func.isRequired
+
   };
   
   export default GameBoard;

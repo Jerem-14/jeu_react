@@ -1,7 +1,7 @@
 // Dans MemoryCard.jsx
 import PropTypes from 'prop-types';
 
-const MemoryCard = ({ media, isFlipped, onClick }) => {
+const MemoryCard = ({ media, isFlipped = false, onClick }) => {
   return (
     <div 
       className={`aspect-square cursor-pointer transition-transform duration-300 ${
@@ -24,16 +24,11 @@ const MemoryCard = ({ media, isFlipped, onClick }) => {
 
 MemoryCard.propTypes = {
   media: PropTypes.shape({
-    type: PropTypes.oneOf(['image', 'video']),
-    url: PropTypes.string
+    type: PropTypes.oneOf(['image', 'video']).isRequired,
+    url: PropTypes.string.isRequired
   }),
   isFlipped: PropTypes.bool.isRequired,
   onClick: PropTypes.func.isRequired
-};
-
-MemoryCard.defaultProps = {
-  media: null,
-  isFlipped: false
 };
 
 export default MemoryCard;

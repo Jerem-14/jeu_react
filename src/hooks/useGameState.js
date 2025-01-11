@@ -1,154 +1,81 @@
-import { useState, useCallback } from 'react';
-import MediaService from '../services/MediaService';
+// useGameState.js
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { io } from 'socket.io-client';
 
-export const useGameState = (initialState) => {
-  const [gameState, setGameState] = useState({
-    cards: [], // tableau des cartes
-    players: [], // infos des joueurs
-    currentTurn: null, // joueur actif
-    selectedCards: [], // cartes retournées
-    scores: {}, // scores des joueurs
-    isLoading: true,
-    error: null,
-    ...initialState
-  });
+export const useGameState = (gameId) => {
+    // Initialise avec un état par défaut plus sûr
+    const [gameState, setGameState] = useState({
+        cards: [],
+        players: {},
+        currentTurn: '',  // String vide par défaut
+        status: 'waiting',
+        error: null
+    });
 
-  const isCurrentPlayer = useCallback(() => {
-    const userId = localStorage.getItem('userId');
-    return gameState.currentTurn === userId;
-  }, [gameState.currentTurn]);
+    const socket = useRef(null);
 
-  // Initialisation du jeu avec les médias
-  const initializeGame = useCallback(async (gameId) => {
-    try {
-      const mediaResult = await MediaService.getMedia();
-      if (mediaResult.success) {
-        const shuffledCards = prepareGameCards(mediaResult.data);
+    useEffect(() => {
+        socket.current = io('http://localhost:3000', {
+            path: '/socket.io/',
+            transports: ['websocket', 'polling'],
+            cors: {
+                origin: "http://localhost:5173",
+                credentials: true
+            }
+        });
+
         const userId = localStorage.getItem('userId');
-        
-        // Récupérer les informations du deuxième joueur via le socket
-        // Pour l'instant, on simule avec un joueur unique
-        const players = [
-          { id: userId, username: localStorage.getItem('username'), score: 0, isActive: true }
-        ];
+        const username = localStorage.getItem('username');
 
-        setGameState(prev => ({
-          ...prev,
-          cards: shuffledCards,
-          players: players,
-          currentTurn: userId,
-          scores: { [userId]: 0 },
-          isLoading: false
-        }));
-      }
-    } catch (error) {
-      setGameState(prev => ({
-        ...prev,
-        error: 'Erreur lors de l\'initialisation du jeu',
-        isLoading: false
-      }));
-    }
-  }, []);
-
-  // Préparation des cartes
-  const prepareGameCards = (mediaList) => {
-    const selectedMedia = mediaList.slice(0, 32);
-    const pairs = [...selectedMedia, ...selectedMedia].map((media, index) => ({
-      id: index,
-      mediaId: media.id,
-      url: media.url,
-      type: media.type,
-      isFlipped: false,
-      isMatched: false
-    }));
-    return shuffleArray(pairs);
-  };
-
-  // Mélange des cartes
-  const shuffleArray = (array) => {
-    const newArray = [...array];
-    for (let i = newArray.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
-    }
-    return newArray;
-  };
-
-  // Gestion du retournement d'une carte
-  const flipCard = useCallback((cardIndex) => {
-    if (!isCurrentPlayer()) {
-      console.log("Ce n'est pas votre tour!");
-      return;
-    }
-
-    setGameState(prev => {
-      if (prev.selectedCards.length >= 2 || prev.cards[cardIndex].isMatched) {
-        return prev;
-      }
-
-      const newCards = [...prev.cards];
-      newCards[cardIndex] = {
-        ...newCards[cardIndex],
-        isFlipped: true
-      };
-
-      const newSelectedCards = [...prev.selectedCards, cardIndex];
-
-      if (newSelectedCards.length === 2) {
-        const [card1, card2] = newSelectedCards;
-        
-        if (newCards[card1].mediaId === newCards[card2].mediaId) {
-          // Paire trouvée
-          newCards[card1].isMatched = true;
-          newCards[card2].isMatched = true;
-          
-          return {
-            ...prev,
-            cards: newCards,
-            scores: {
-              ...prev.scores,
-              [prev.currentTurn]: prev.scores[prev.currentTurn] + 1
-            },
-            selectedCards: []
-          };
+        if (gameId) {
+            socket.current.emit('joinGame', {
+                gameId,
+                player: { id: userId, username }
+            });
         }
 
-        // Pas une paire - retourner les cartes après un délai
-        setTimeout(() => {
-          setGameState(prevState => {
-            const updatedCards = prevState.cards.map((card, idx) => 
-              idx === card1 || idx === card2 
-                ? { ...card, isFlipped: false }
-                : card
-            );
+        socket.current.on('gameStateUpdate', (newState) => {
+            console.log('Nouvel état reçu:', newState); // Debug
+            setGameState(newState);
+        });
 
-            // Changer de tour
-            const currentPlayerIndex = prevState.players.findIndex(p => p.id === prevState.currentTurn);
-            const nextPlayerIndex = (currentPlayerIndex + 1) % prevState.players.length;
-            const nextPlayerId = prevState.players[nextPlayerIndex].id;
+        socket.current.on('gameError', ({ message }) => {
+            console.error('Erreur reçue:', message); // Debug
+            setGameState(prev => ({ ...prev, error: message }));
+        });
 
-            return {
-              ...prevState,
-              cards: updatedCards,
-              currentTurn: nextPlayerId,
-              selectedCards: []
-            };
-          });
-        }, 1000);
-      }
+        return () => {
+            if (socket.current) {
+                socket.current.disconnect();
+            }
+        };
+    }, [gameId]);
 
-      return {
-        ...prev,
-        cards: newCards,
-        selectedCards: newSelectedCards
-      };
-    });
-  }, [isCurrentPlayer]);
+    const flipCard = useCallback((cardIndex) => {
+        const userId = localStorage.getItem('userId');
+        console.log('Émission de flipCard:', { gameId, playerId: userId, cardIndex });
+        if (socket.current) {
+            socket.current.emit('flipCard', {
+                gameId,
+                playerId: userId,
+                cardIndex
+            });
+        }
+    }, [gameId]);
 
-  return {
-    gameState,
-    isCurrentPlayer,
-    flipCard,
-    initializeGame
-  };
+    const isCurrentPlayer = useCallback(() => {
+        // Vérification de sécurité
+        if (!gameState || typeof gameState.currentTurn === 'undefined') {
+            return false;
+        }
+        const userId = localStorage.getItem('userId');
+        return gameState.currentTurn === userId;
+    }, [gameState]);
+
+    return {
+        gameState,
+        flipCard,
+        isCurrentPlayer,
+        error: gameState?.error
+    };
 };
