@@ -24,12 +24,45 @@ const GAME_STATES = {
 // Initial page with create/join buttons
 const GameChoice = () => {
   const navigate = useNavigate();
+  const handlePlayAgain = async () => {
+    try {
+      const userId = localStorage.getItem('userId');
+      const username = localStorage.getItem('username');
+      
+      if (!userId || !username) {
+        console.error('Informations utilisateur manquantes');
+        return;
+      }
+
+      const result = await GameService.createGame();
+      if (result.success) {
+        const gameId = result.data.gameId;
+        
+        socket.emit('createGame', {
+          gameId,
+          creator: {
+            id: userId,
+            username
+          }
+        });
+
+        navigate('/game/create');
+      }
+    } catch (error) {
+      console.error('Erreur création nouvelle partie:', error);
+    }
+  };
+
+  const handleQuit = () => {
+    // Rediriger vers la page d'accueil
+    navigate('/');
+  };
   
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-4">
       <div className="flex gap-4 items-center">
         <button 
-          onClick={() => navigate('/game/create')}
+          onClick={handlePlayAgain}
           className="btn btn-primary"
         >
           Créer une partie
