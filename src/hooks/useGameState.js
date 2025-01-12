@@ -17,11 +17,17 @@ export const useGameState = (gameId) => {
     useEffect(() => {
         socket.current = io('http://localhost:3000', {
             path: '/socket.io/',
-            transports: ['websocket', 'polling'],
+            transports: ['polling', 'websocket'],
             cors: {
                 origin: "http://localhost:5173",
                 credentials: true
-            }
+            },
+            reconnection: true,
+            reconnectionAttempts: 5,
+            reconnectionDelay: 1000,
+            timeout: 20000,
+            autoConnect: true,
+            withCredentials: true
         });
 
         const userId = localStorage.getItem('userId');
@@ -53,6 +59,7 @@ export const useGameState = (gameId) => {
 
     const flipCard = useCallback((cardIndex) => {
         const userId = localStorage.getItem('userId');
+        console.log('État actuel du jeu:', gameState);
         console.log('Émission de flipCard:', { gameId, playerId: userId, cardIndex });
         if (socket.current) {
             socket.current.emit('flipCard', {
@@ -61,7 +68,7 @@ export const useGameState = (gameId) => {
                 cardIndex
             });
         }
-    }, [gameId]);
+    }, [gameId, gameState]);
 
     const isCurrentPlayer = useCallback(() => {
         // Vérification de sécurité

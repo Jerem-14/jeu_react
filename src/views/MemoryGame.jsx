@@ -8,24 +8,28 @@ const MemoryGame = () => {
     const { gameId } = useParams();
     const { gameState, flipCard, isCurrentPlayer, error } = useGameState(gameId);
 
-    if (!gameState) {
-        return <div>Chargement...</div>;
-    }
 
     const handleCardClick = (cardIndex) => {
-        if (!isCurrentPlayer()) {
-            console.log("Ce n'est pas votre tour");
+         // Vérifions d'abord que gameState et cards existent
+         if (!gameState || !gameState.cards || !gameState.cards[cardIndex]) {
+            console.log("État du jeu non disponible");
             return;
         }
+        
+        if (!isCurrentPlayer() || gameState.cards[cardIndex].isFlipped === true) {
+            console.log("Ce n'est pas votre tour carte déjà retournée");
+            return;
+        }
+        console.log("Tentative de retourner la carte:", cardIndex);
         flipCard(cardIndex);
     };
 
-    if (error) {
-        return <div className="alert alert-error">{error}</div>;
-    }
 
     return (
         <div className="container mx-auto p-4">
+             {error && (
+                <div className="alert alert-error">{error}</div>
+            )}
             {!isCurrentPlayer() && (
                 <div className="alert alert-warning">
                     En attente du tour de l'autre joueur...

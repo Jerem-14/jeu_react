@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import MemoryCard from '../atoms/MemoryCard';
 
-const GameGrid = ({ cards, onCardClick }) => {
+const GameGrid = ({ cards = [], onCardClick }) => {
   console.log('Cartes reçues:', cards);  
   return (
       <div className="grid grid-cols-8 gap-2">
@@ -9,9 +9,9 @@ const GameGrid = ({ cards, onCardClick }) => {
           <MemoryCard
             key={index}
             media={card}
-            isFlipped={card.isFlipped}
+            isFlipped={Boolean(card?.isFlipped)}
             onClick={() => {
-              console.log('Clic sur carte dans la grille:', index);
+              console.log('Clic sur carte dans la grille:', index, card);
               onCardClick(index);
           }}
           />
