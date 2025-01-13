@@ -15,7 +15,40 @@ const socket = io('http://localhost:3000', {
       }
   });
 
-const GameOverModal = ({ gameState, onPlayAgain, onQuit }) => {
+
+  const RematchRequestModal = ({ request, onAccept, onDecline }) => {
+    if (!request) return null;
+
+    return (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-base-100 rounded-lg p-6 max-w-sm mx-4">
+                <h3 className="text-lg font-bold mb-4">
+                    Demande de revanche !
+                </h3>
+                <p className="mb-6">
+                    {request.player.username} vous propose une revanche. Acceptez-vous ?
+                </p>
+                <div className="flex gap-4">
+                    <button 
+                        onClick={onAccept}
+                        className="btn btn-primary flex-1"
+                    >
+                        Accepter
+                    </button>
+                    <button 
+                        onClick={onDecline}
+                        className="btn btn-outline flex-1"
+                    >
+                        Refuser
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+const GameOverModal = ({ gameState, onPlayAgain, onQuit, onRequestRematch, rematchRequested   }) => {
+
     if (!gameState.status || gameState.status !== 'finished') return null;
 
     const currentPlayerId = localStorage.getItem('userId');
@@ -38,7 +71,23 @@ const GameOverModal = ({ gameState, onPlayAgain, onQuit }) => {
                     ))}
                 </div>
                 
-                <div className="flex gap-4">
+                <div className="flex gap-4 flex-col">
+                {rematchRequested && (
+                        <div className="alert alert-info">
+                            <span>En attente de la réponse de l'adversaire...</span>
+                            <span className="loading loading-dots loading-sm"></span>
+                        </div>
+                    )}
+
+                    <div className="flex gap-4">
+                        {!rematchRequested && (
+                            <button 
+                                onClick={onRequestRematch}
+                                className="btn btn-secondary flex-1"
+                            >
+                                Demander une revanche
+                            </button>
+                        )}
                     <button 
                         onClick={onPlayAgain}
                         className="btn btn-primary flex-1"
@@ -51,7 +100,8 @@ const GameOverModal = ({ gameState, onPlayAgain, onQuit }) => {
                     >
                         Menu Principal
                     </button>
-                </div>
+                    </div> 
+               </div>
             </div>
         </div>
     );
@@ -60,8 +110,18 @@ const GameOverModal = ({ gameState, onPlayAgain, onQuit }) => {
 const MemoryGame = () => {
     const { gameId } = useParams();
     const navigate = useNavigate();
-    const { gameState, flipCard, isCurrentPlayer, error } = useGameState(gameId);
-
+    const { 
+        gameState, 
+        flipCard, 
+        isCurrentPlayer, 
+        error,
+        rematchRequest,
+        requestRematch,
+        acceptRematch,
+        declineRematch
+    } = useGameState(gameId);
+    const [rematchRequested, setRematchRequested] = useState(false);
+    
 
     const handleCardClick = (cardIndex) => {
          // Vérifions d'abord que gameState et cards existent
@@ -77,6 +137,13 @@ const MemoryGame = () => {
         console.log("Tentative de retourner la carte:", cardIndex);
         flipCard(cardIndex);
     };
+
+
+    const handleRematchRequest = () => {
+        setRematchRequested(true);
+        requestRematch();
+    };
+
 
     const handlePlayAgain = async () => {
         try {
@@ -130,6 +197,14 @@ const MemoryGame = () => {
                 gameState={gameState}
                 onPlayAgain={handlePlayAgain}
                 onQuit={handleQuit}
+                onRequestRematch={handleRematchRequest}
+                rematchRequested={rematchRequested}
+            />
+
+            <RematchRequestModal
+                request={rematchRequest}
+                onAccept={acceptRematch}
+                onDecline={declineRematch}
             />
         </div>
     );

@@ -12,12 +12,15 @@ export const useGameState = (gameId) => {
         error: null
     });
 
+    const [rematchRequest, setRematchRequest] = useState(null);
+
     const socket = useRef(null);
 
     useEffect(() => {
         socket.current = io('http://localhost:3000', {
             path: '/socket.io/',
-            transports: ['polling', 'websocket'],
+            //transports: ['polling', 'websocket'],
+            transports: ['websocket', 'polling'],
             cors: {
                 origin: "http://localhost:5173",
                 credentials: true
@@ -50,6 +53,22 @@ export const useGameState = (gameId) => {
             setGameState(prev => ({ ...prev, error: message }));
         });
 
+        // Ajouter les écouteurs pour la revanche
+        socket.current.on('rematchRequested', (data) => {
+          console.log('Demande de revanche reçue:', data);
+          setRematchRequest(data);
+      });
+
+      socket.current.on('rematchAccepted', (data) => {
+          console.log('Revanche acceptée:', data);
+          setRematchRequest(null);
+      });
+
+      socket.current.on('rematchDeclined', () => {
+          console.log('Revanche refusée');
+          setRematchRequest(null);
+      });
+
         return () => {
             if (socket.current) {
                 socket.current.disconnect();
@@ -70,6 +89,32 @@ export const useGameState = (gameId) => {
         }
     }, [gameId, gameState]);
 
+    const requestRematch = useCallback(() => {
+      const userId = localStorage.getItem('userId');
+      const username = localStorage.getItem('username');
+      console.log('Demande de revanche envoyée');
+      socket.current.emit('requestRematch', {
+          gameId,
+          player: { id: userId, username }
+      });
+  }, [gameId]);
+
+  const acceptRematch = useCallback(() => {
+      const userId = localStorage.getItem('userId');
+      const username = localStorage.getItem('username');
+      console.log('Acceptation de la revanche');
+      socket.current.emit('acceptRematch', {
+          gameId,
+          player: { id: userId, username }
+      });
+  }, [gameId]);
+
+  const declineRematch = useCallback(() => {
+      console.log('Refus de la revanche');
+      socket.current.emit('declineRematch', { gameId });
+      setRematchRequest(null);
+  }, [gameId]);
+
     const isCurrentPlayer = useCallback(() => {
         // Vérification de sécurité
         if (!gameState || typeof gameState.currentTurn === 'undefined') {
@@ -83,6 +128,10 @@ export const useGameState = (gameId) => {
         gameState,
         flipCard,
         isCurrentPlayer,
-        error: gameState?.error
+        error: gameState?.error,
+        rematchRequest,
+        requestRematch,
+        acceptRematch,
+        declineRematch
     };
 };

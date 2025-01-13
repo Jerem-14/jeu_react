@@ -101,7 +101,7 @@ class UserService {
         } catch (error) {
             return { 
                 success: false, 
-                error: 'Erreur lors de la récupération des utilisateurs'
+                error: error || 'Erreur lors de la récupération des utilisateurs'
             };
         }
     }

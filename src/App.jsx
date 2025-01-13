@@ -41,6 +41,7 @@ function App() {
       const result = await UserService.logout();
       if (result.success) {
         saveToken(null);
+      localStorage.removeItem('token');
       localStorage.removeItem('userId'); // Also clear userId
       localStorage.removeItem('username'); // Also clear username
       }

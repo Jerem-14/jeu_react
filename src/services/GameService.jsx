@@ -68,6 +68,33 @@ async updateGameState(gameId, action) {
     }
   }
 
+  // Dans GameService.jsx, ajouter cette méthode
+async createRematch(previousGameState) {
+    try {
+        const userId = localStorage.getItem('userId');
+        const response = await this.api.post('/game', { userId });
+        
+        if (response.data.gameId) {
+            return { 
+                success: true, 
+                data: {
+                    gameId: response.data.gameId,
+                    players: previousGameState.players // On conserve les joueurs
+                }
+            };
+        }
+        return { 
+            success: false, 
+            error: 'Erreur lors de la création de la revanche'
+        };
+    } catch (error) {
+        return { 
+            success: false, 
+            error: error.response?.data?.error || 'Error creating rematch game'
+        };
+    }
+}
+
   
 }
 
