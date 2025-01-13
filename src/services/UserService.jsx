@@ -146,6 +146,18 @@ class UserService {
           };
         }
     }
+
+    async getGameStats(userId) {
+        try {
+            const response = await this.api.get(`/users/${userId}/stats`);
+            return { success: true, data: response.data };
+        } catch (error) {
+            return { 
+                success: false, 
+                error: 'Error fetching game statistics'
+            };
+        }
+    }
     async updateUser(userId, userData) {
         try {
             const response = await this.api.patch(`/users/${userId}`, userData);

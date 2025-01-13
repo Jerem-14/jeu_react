@@ -3,9 +3,19 @@ import { Trophy, User, Mail, GamepadIcon, Award } from 'lucide-react';
 import UserService from '../services/UserService';
 
 // Helper function to calculate stats from game history
-const calculateStats = (games, userId) => {
+const calculateStats = (gamesResponse, userId) => {
+  if (!gamesResponse.success || !gamesResponse.data) {
+    return {
+      totalGames: 0,
+      wins: 0,
+      losses: 0,
+      ties: 0,
+      winRate: 0
+    };
+  }
+  
+  const games = gamesResponse.data;
   console.log("Calculating stats for games:", games);
-  console.log("User ID for stats:", userId);
   
   const stats = {
     totalGames: games.length,
@@ -31,9 +41,9 @@ const calculateStats = (games, userId) => {
     ? Math.round((stats.wins / stats.totalGames) * 100)
     : 0;
 
-  console.log("Calculated stats:", stats);
   return stats;
 };
+
 
 const Profile = () => {
   console.log("ProfilePage component rendering");
@@ -58,11 +68,9 @@ const Profile = () => {
     const loadUserData = async () => {
       console.log("Starting to load user data");
       const token = localStorage.getItem('token');
-      console.log("Token from localStorage:", token);
       
       if (token) {
         try {
-          // Decode JWT token
           const base64Url = token.split('.')[1];
           const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
           const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => {
@@ -70,50 +78,39 @@ const Profile = () => {
           }).join(''));
           
           const decodedToken = JSON.parse(jsonPayload);
-          console.log("Decoded token:", decodedToken);
           
           if (decodedToken.id) {
             // Fetch user data
-            console.log("Fetching user data for ID:", decodedToken.id);
             const response = await UserService.getUserById(decodedToken.id);
-            console.log("User data response:", response);
             
             if (response.success) {
-              console.log("Setting user data:", response.data);
               setUserData(response.data);
               
-              // Fetch game history
-              console.log("Fetching game history");
+              // Fetch both game history and stats
               try {
-                const gamesResponse = await UserService.getUserGames(decodedToken.id);
-                console.log("Games response:", gamesResponse);
+                const [gamesResponse, statsResponse] = await Promise.all([
+                  UserService.getUserGames(decodedToken.id),
+                  UserService.getGameStats(decodedToken.id)
+                ]);
                 
                 if (gamesResponse.success) {
-                  console.log("Setting game history:", gamesResponse.data);
                   setGameHistory(gamesResponse.data);
-                  
-                  // Calculate stats
-                  const stats = calculateStats(gamesResponse.data, decodedToken.id);
-                  console.log("Setting game stats:", stats);
-                  setGameStats(stats);
-                } else {
-                  console.error("Failed to fetch game history:", gamesResponse.error);
+                  setGameStats(prev => ({
+                    ...prev,
+                    ...statsResponse.data
+                  }));
                 }
-              } catch (gameError) {
-                console.error("Error in game history fetch:", gameError);
+              } catch (error) {
+                console.error("Error fetching game data:", error);
               }
-            } else {
-              console.error("Failed to fetch user data:", response.error);
             }
           }
         } catch (error) {
           console.error("Error in loadUserData:", error);
         }
-      } else {
-        console.log("No token found in localStorage");
       }
     };
-
+  
     loadUserData();
   }, []);
 
@@ -305,32 +302,50 @@ const Profile = () => {
                   <th>Score</th>
                 </tr>
               </thead>
-              <tbody>
-                {gameHistory.length > 0 ? (
-                  gameHistory.map((game) => {
-                    console.log("Rendering game:", game);
-                    const isCreator = game.creator === userData.id;
-                    const opponent = isCreator ? game.player2?.username : game.player1?.username;
-                    const result = game.winner === userData.id ? 'Won' : 
-                                 game.winner === null ? 'Tie' : 'Lost';
-                    const resultClass = result === 'Won' ? 'text-success' :
-                                      result === 'Lost' ? 'text-error' : 'text-warning';
-                    
-                    return (
-                      <tr key={game.id}>
-                        <td>{new Date(game.createdAt).toLocaleDateString()}</td>
-                        <td>{opponent || 'Waiting for player...'}</td>
-                        <td className={resultClass}>{result}</td>
-                        <td>{game.winnerScore || '-'}</td>
-                      </tr>
-                    );
-                  })
-                ) : (
-                  <tr>
-                    <td colSpan="4" className="text-center text-base-content">No recent games</td>
-                  </tr>
-                )}
-              </tbody>
+<tbody>
+  {gameHistory && gameHistory.length > 0 ? (
+    gameHistory.map((game) => {
+      const isCreator = game.creator === userData.id;
+      const opponent = isCreator 
+        ? (game.player2 ? game.player2.username : 'En attente...') 
+        : (game.player1 ? game.player1.username : 'En attente...');
+      
+      let result;
+      let resultClass;
+      
+      if (game.state === 'finished') {
+        if (game.winner === userData.id) {
+          result = 'Won';
+          resultClass = 'text-success';
+        } else if (game.winner === null) {
+          result = 'Tie';
+          resultClass = 'text-warning';
+        } else {
+          result = 'Lost';
+          resultClass = 'text-error';
+        }
+      } else {
+        result = game.state === 'playing' ? 'En cours' : 'En attente';
+        resultClass = 'text-info';
+      }
+      
+      return (
+        <tr key={game.id}>
+          <td>{new Date(game.createdAt).toLocaleDateString()}</td>
+          <td>{opponent}</td>
+          <td className={resultClass}>{result}</td>
+          <td>{game.winnerScore || '-'}</td>
+        </tr>
+      );
+    })
+  ) : (
+    <tr>
+      <td colSpan="4" className="text-center text-base-content">
+        Pas encore de parties jouées
+      </td>
+    </tr>
+  )}
+</tbody>
             </table>
           </div>
         </div>
