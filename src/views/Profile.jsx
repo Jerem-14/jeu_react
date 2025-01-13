@@ -61,16 +61,18 @@ const Profile = () => {
     wins: 0,
     losses: 0,
     ties: 0,
-    winRate: 0
+    winRate: 0,
+    bestScore: 0
   });
 
   useEffect(() => {
     const loadUserData = async () => {
-      console.log("Starting to load user data");
       const token = localStorage.getItem('token');
+      console.log("Starting to load user data with token:", token);
       
       if (token) {
         try {
+          // Decode JWT token
           const base64Url = token.split('.')[1];
           const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
           const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => {
@@ -78,30 +80,26 @@ const Profile = () => {
           }).join(''));
           
           const decodedToken = JSON.parse(jsonPayload);
+          console.log("Decoded token:", decodedToken);
           
           if (decodedToken.id) {
-            // Fetch user data
-            const response = await UserService.getUserById(decodedToken.id);
-            
-            if (response.success) {
-              setUserData(response.data);
+            // 1. Fetch user data
+            const userResponse = await UserService.getUserById(decodedToken.id);
+            if (userResponse.success) {
+              setUserData(userResponse.data);
               
-              // Fetch both game history and stats
-              try {
-                const [gamesResponse, statsResponse] = await Promise.all([
-                  UserService.getUserGames(decodedToken.id),
-                  UserService.getGameStats(decodedToken.id)
-                ]);
-                
-                if (gamesResponse.success) {
-                  setGameHistory(gamesResponse.data);
-                  setGameStats(prev => ({
-                    ...prev,
-                    ...statsResponse.data
-                  }));
-                }
-              } catch (error) {
-                console.error("Error fetching game data:", error);
+              // 2. Fetch games history
+              const gamesResponse = await UserService.getUserGames(decodedToken.id);
+              console.log("Games response:", gamesResponse);
+              if (gamesResponse.success) {
+                setGameHistory(gamesResponse.data);
+              }
+  
+              // 3. Fetch stats separately
+              const statsResponse = await UserService.getGameStats(decodedToken.id);
+              console.log("Stats response:", statsResponse);
+              if (statsResponse.success) {
+                setGameStats(statsResponse.data);
               }
             }
           }
@@ -302,37 +300,42 @@ const Profile = () => {
                   <th>Score</th>
                 </tr>
               </thead>
-<tbody>
-  {gameHistory && gameHistory.length > 0 ? (
-    gameHistory.map((game) => {
-      const isCreator = game.creator === userData.id;
-      const opponent = isCreator 
-        ? (game.player2 ? game.player2.username : 'En attente...') 
-        : (game.player1 ? game.player1.username : 'En attente...');
-      
-      let result;
-      let resultClass;
-      
-      if (game.state === 'finished') {
-        if (game.winner === userData.id) {
-          result = 'Won';
-          resultClass = 'text-success';
-        } else if (game.winner === null) {
-          result = 'Tie';
-          resultClass = 'text-warning';
-        } else {
-          result = 'Lost';
-          resultClass = 'text-error';
-        }
-      } else {
-        result = game.state === 'playing' ? 'En cours' : 'En attente';
-        resultClass = 'text-info';
+              <tbody>
+  {gameHistory?.data && gameHistory.data.length > 0 ? (
+    gameHistory.data.map((game) => {
+      // Determine l'adversaire
+      const opponent = game.creator === userData.id 
+        ? game.player2?.username 
+        : game.player1?.username;
+
+      // Determine le résultat et sa classe CSS
+      let result, resultClass;
+      switch(game.state) {
+        case 'finished':
+          if (game.winner === userData.id) {
+            result = 'Victoire';
+            resultClass = 'text-success';
+          } else if (game.winner === null) {
+            result = 'Égalité';
+            resultClass = 'text-warning';
+          } else {
+            result = 'Défaite';
+            resultClass = 'text-error';
+          }
+          break;
+        case 'playing':
+          result = 'En cours';
+          resultClass = 'text-info';
+          break;
+        default:
+          result = 'En attente';
+          resultClass = 'text-base-content';
       }
-      
+
       return (
         <tr key={game.id}>
-          <td>{new Date(game.createdAt).toLocaleDateString()}</td>
-          <td>{opponent}</td>
+          <td>{new Date(game.createdAt).toLocaleDateString('fr-FR')}</td>
+          <td>{opponent || 'En attente...'}</td>
           <td className={resultClass}>{result}</td>
           <td>{game.winnerScore || '-'}</td>
         </tr>
