@@ -15,7 +15,7 @@ import { useLocation } from 'react-router-dom';
     <header className="navbar bg-base-100">
       <div className="flex-1">
         <a href='/'>
-        <Logo src="/src/assets/singe.svg" alt="Singe"  />
+        <Logo src="/singe.svg" alt="Singe"  />
         </a>
       </div>
       <div className="flex-none gap-2">
