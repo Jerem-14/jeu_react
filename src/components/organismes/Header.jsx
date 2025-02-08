@@ -1,7 +1,7 @@
-import Logo from '../atoms/Logo';
-import Navbar from '../molecules/Navbar';
-import Toggle from '../atoms/Toggle';
-import Button from '../atoms/Button';
+import Logo from '@atoms/Logo';
+import Navbar from '@molecules/Navbar';
+import Toggle from '@atoms/Toggle';
+import Button from '@atoms/Button';
 import PropTypes from 'prop-types';
 import { useLocation } from 'react-router-dom';
 

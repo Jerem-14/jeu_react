@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import PlayerScore from '../atoms/PlayerScore';
+import PlayerScore from '@atoms/PlayerScore';
 
 const PlayerInfo = ({ players }) => {
 

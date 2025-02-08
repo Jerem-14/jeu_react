@@ -1,7 +1,7 @@
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
-import FormField from '../molecules/FormField';
-import Button from '../atoms/Button';
+import FormField from '@molecules/FormField';
+import Button from '@atoms/Button';
 import PropTypes from 'prop-types';
 import { useNavigate, useLocation  } from 'react-router-dom';
 

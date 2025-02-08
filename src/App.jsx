@@ -3,15 +3,15 @@ import { useContext } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import LoginForm from './components/organismes/LoginForm';
 import SignupForm from './components/organismes/SignupForm';
-import Accueil from './views/Accueil';
-import Header from './components/organismes/Header';
-import Home from './views/Home';
-import Media from './views/Media';
-import Profile from './views/Profile';
-import GameRoom from './views/GameRoom';
-import Settings from './views/Settings';
-import UserService from './services/UserService';
-import { GlobalContext } from './contexts/GlobalContext';
+import Accueil from '@views/Accueil';
+import Header from '@organismes/Header';
+import Home from '@views/Home';
+import Media from '@views/Media';
+import Profile from '@views/Profile';
+import GameRoom from '@views/GameRoom';
+import Settings from '@views/Settings';
+import UserService from '@services/UserService';
+import { GlobalContext } from '@contexts/GlobalContext';
 
 function App() {
   const { token, saveToken, isAuthenticated, isAuthResolved } = useContext(GlobalContext);

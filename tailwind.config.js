@@ -1,7 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 
 // eslint-disable-next-line no-undef
-const daisyui = require('daisyui');
+import daisyui from 'daisyui'
 
 export default {
   content: [

@@ -1,6 +1,6 @@
 import AuthTemplate from '../authTemplate';
-import LoginForm from '../components/organismes/LoginForm';
-import SignupForm from '../components/organismes/SignupForm';
+import LoginForm from '@organismes/LoginForm';
+import SignupForm from '@organismes/SignupForm';
 import { useState } from 'react';
 
 const AuthPage = () => {

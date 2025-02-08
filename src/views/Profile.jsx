@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Trophy, User, Mail, GamepadIcon, Award } from 'lucide-react';
-import UserService from '../services/UserService';
+import UserService from '@services/UserService';
 
 // Helper function to calculate stats from game history
 const calculateStats = (gamesResponse, userId) => {

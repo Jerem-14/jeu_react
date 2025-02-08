@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Routes, Route, useNavigate, useParams } from 'react-router-dom';
 import { io } from 'socket.io-client';
-import GameService from '../services/GameService';
-import MemoryGame from '../views/MemoryGame';
+import GameService from '@services/GameService';
+import MemoryGame from '@views/MemoryGame';
 
 const socket = io('http://localhost:3000', {
   path: '/socket.io/',

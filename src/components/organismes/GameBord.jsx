@@ -1,8 +1,8 @@
 // GameBoard.jsx
 import PropTypes from 'prop-types';
-import GameGrid from '../molecules/GameGrid';
-import PlayerInfo from '../molecules/PlayerInfo';
-import GameStatus from '../atoms/GameStatus'
+import GameGrid from '@molecules/GameGrid';
+import PlayerInfo from '@molecules/PlayerInfo';
+import GameStatus from '@atoms/GameStatus'
 
 const GameBoard = ({ gameState, onMove }) => {
 
