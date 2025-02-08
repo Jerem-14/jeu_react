@@ -1,4 +1,4 @@
-import NavItem from '@atoms/NavItem.jsx';
+import NavItem from '@/components/atoms/NavItem.jsx';
 
 const Navbar = () => (
   <ul className="menu menu-horizontal px-1 text-base-content">

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import MediaService from '@services/MediaService.jsx';
+import MediaService from '@/services/MediaService.jsx';
 
 const MediaUploadForm = () => {
   const [file, setFile] = useState(null);

@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import MemoryCard from '@atoms/MemoryCard.jsx';
+import MemoryCard from '@/components/atoms/MemoryCard.jsx';
 
 const GameGrid = ({ cards = [], onCardClick }) => {
   console.log('Cartes reçues:', cards);  

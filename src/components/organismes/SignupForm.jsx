@@ -1,11 +1,11 @@
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
-import FormField from '@molecules/FormField.jsx';
-import Button from '@atoms/Button.jsx';
+import FormField from '@/components/molecules/FormField.jsx';
+import Button from '@/components/atoms/Button.jsx';
 import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
-import UserService from '@services/UserService.jsx';
+import UserService from '@/services/UserService.jsx';
 
 const SignupForm = ({ onSubmit }) => {
   const validationSchema = Yup.object({
