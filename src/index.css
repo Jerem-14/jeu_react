@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -56,16 +60,15 @@ button:focus-visible {
 
 /* index.css ou votre fichier de styles */
 [data-theme="light"] .input::placeholder {
-  color: hsl(var(--nc) / 0.7);  /* neutral-content avec 70% d'opacité */
+  color: hsl(var(--nc) / 0.7); /* neutral-content avec 70% d'opacité */
 }
 
 [data-theme="dark"] .input::placeholder {
-  color: hsl(var(--nc) / 0.8);  /* neutral-content avec 80% d'opacité */
+  color: hsl(var(--nc) / 0.8); /* neutral-content avec 80% d'opacité */
 }
 
 @media (prefers-color-scheme: light) {
-
-  body{
+  body {
     color: red;
   }
   :root {
@@ -81,5 +84,5 @@ button:focus-visible {
 
   :is(h1, h2, h3, h4, h5, h6) {
     color: red;
-}
+  }
 }

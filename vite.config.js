@@ -16,6 +16,7 @@ export default defineConfig({
       '@views': path.resolve(__dirname, './src/views'),
       '@hooks': path.resolve(__dirname, './src/hooks'),
       '@contexts': path.resolve(__dirname, './src/contexts'),
-    }
+    },
+    extensions: ['.js', '.jsx']
   }
 })
