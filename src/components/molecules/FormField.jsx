@@ -1,5 +1,5 @@
-import Label from '../../components/atoms/Label.jsx';
-import Input from '../../components/atoms/Input.jsx';
+import Label from '../atoms/Label.jsx';
+import Input from '../atoms/Input.jsx';
 import PropTypes from 'prop-types';
 
 const FormField = ({ label, type, name, placeholder, icon }) => (
