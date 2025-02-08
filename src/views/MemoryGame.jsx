@@ -1,9 +1,9 @@
 // views/MemoryGame/index.jsx
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useGameState } from '@hooks/useGameState';
-import GameBoard from '@organismes/GameBord';
-import GameService from '@services/GameService';
+import { useGameState } from '@hooks/useGameState.jsx';
+import GameBoard from '@organismes/GameBord.jsx';
+import GameService from '@services/GameService.jsx';
 import { io } from 'socket.io-client';
 
 const socket = io('http://localhost:3000', {

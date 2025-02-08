@@ -1,17 +1,17 @@
 import './App.css';
 import { useContext } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
-import LoginForm from './components/organismes/LoginForm';
-import SignupForm from './components/organismes/SignupForm';
-import Accueil from '@views/Accueil';
-import Header from '@organismes/Header';
-import Home from '@views/Home';
-import Media from '@views/Media';
-import Profile from '@views/Profile';
-import GameRoom from '@views/GameRoom';
-import Settings from '@views/Settings';
-import UserService from '@services/UserService';
-import { GlobalContext } from '@contexts/GlobalContext';
+import LoginForm from '@organismes/LoginForm.jsx';
+import SignupForm from '@organismes/SignupForm.jsx';
+import Accueil from '@views/Accueil.jsx';
+import Header from '@organismes/Header.jsx';
+import Home from '@views/Home.jsx';
+import Media from '@views/Media.jsx';
+import Profile from '@views/Profile.jsx';
+import GameRoom from '@views/GameRoom.jsx';
+import Settings from '@views/Settings.jsx';
+import UserService from '@services/UserService.jsx';
+import { GlobalContext } from '@contexts/GlobalContext.jsx';
 
 function App() {
   const { token, saveToken, isAuthenticated, isAuthResolved } = useContext(GlobalContext);
