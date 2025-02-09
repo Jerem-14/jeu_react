@@ -50,16 +50,16 @@ const GameOverModal = ({ gameState, onPlayAgain, onQuit, onRequestRematch, remat
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-base-100 rounded-lg p-8 max-w-md w-full mx-4">
-                <h2 className="text-2xl font-bold mb-4 text-center">
+                <h2 className="text-2xl font-bold mb-4 text-center text-base-content">
                     {gameState.isDraw ? "Match nul !" : (isWinner ? "Victoire !" : "Défaite...")}
                 </h2>
                 
                 <div className="mb-6">
-                    <h3 className="text-lg font-semibold mb-2">Scores finaux :</h3>
+                    <h3 className="text-lg font-semibold mb-2 text-neutral">Scores finaux :</h3>
                     {Object.values(gameState.players).map((player) => (
                         <div key={player.id} className="flex justify-between items-center mb-2">
-                            <span>{player.id}</span>
-                            <span className="font-bold">{player.score} paires</span>
+                            <span class="text-neutral">{player.username}</span>
+                            <span className="font-bold text-base-content">{player.score} paires</span>
                         </div>
                     ))}
                 </div>

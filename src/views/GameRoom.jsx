@@ -113,7 +113,7 @@ useEffect(() => {
         ...prev,
         gameId: updatedState.gameId || prev.gameId,
         playerJoined: Object.keys(updatedState.players || {}).length > 1,
-        joinedPlayerName: otherPlayer?.id || prev.joinedPlayerName,
+        joinedPlayerName: otherPlayer?.username || prev.joinedPlayerName,
         gameStatus: Object.keys(updatedState.players || {}).length > 1 
           ? GAME_STATES.WAITING 
           : prev.gameStatus
@@ -208,8 +208,8 @@ useEffect(() => {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen p-4">
         <div className="text-center space-y-4">
-          <h2 className="text-2xl font-bold">La partie démarre !</h2>
-          <div className="loading loading-spinner loading-lg"></div>
+          <h2 className="text-2xl font-bold text-base-content">La partie démarre !</h2>
+          <div className="loading loading-spinner loading-lg bg-base-100"></div>
         </div>
       </div>
     );
@@ -229,9 +229,9 @@ useEffect(() => {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-4">
-      <div className="text-center space-y-6">
-        <h2 className="text-2xl font-bold">Ta partie a été créée ! 🎮</h2>
+    <div className="flex flex-col items-center justify-center min-h-screen p-4 bg-base-200">
+      <div className="card text-center space-y-6 bg-base-100">
+        <h2 className="text-2xl font-bold text-base-content">Ta partie a été créée ! 🎮</h2>
         <p className="text-base-content">
           Envoi ce game id à ton ami pour qu'il rejoigne la partie !
         </p>
@@ -338,8 +338,8 @@ const JoinGame = () => {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen p-4">
         <div className="text-center space-y-4">
-          <h2 className="text-2xl font-bold">Tu as rejoint la partie !</h2>
-          <p className="italic">
+          <h2 className="text-2xl font-bold text-base-content">Tu as rejoint la partie !</h2>
+          <p className="italic text-neutral">
             La partie a démarré ! Le jeu va se lancer dans 4 secondes...
           </p>
         </div>
@@ -351,8 +351,8 @@ const JoinGame = () => {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen p-4">
         <div className="text-center space-y-4">
-          <h2 className="text-2xl font-bold">Tu as rejoint la partie !</h2>
-          <p className="italic">
+          <h2 className="text-2xl font-bold text-base-content">Tu as rejoint la partie !</h2>
+          <p className="italic text-neutral">
             La partie est pleine, veuillez patienter le temps que le créateur la lance...
           </p>
         </div>
@@ -361,28 +361,28 @@ const JoinGame = () => {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-4">
-      <div className="card w-96 bg-base-100 shadow-xl">
-        <div className="card-body">
-          <h2 className="card-title justify-center">Rejoins une partie ✌️</h2>
-          <div className="flex gap-2">
-            <input
-              type="text"
-              placeholder="ID du jeu"
-              className="input input-bordered flex-1"
-              value={gameId}
-              onChange={(e) => setGameId(e.target.value)}
-            />
-            <button 
-              onClick={joinRoom}
-              className="btn btn-primary"
-            >
-              Rejoindre
-            </button>
-          </div>
-        </div>
+<div className="flex flex-col items-center justify-center min-h-screen p-4 bg-base-200">
+  <div className="card w-96 bg-base-100 shadow-xl">
+    <div className="card-body gap-8">
+      <h2 className="card-title justify-center text-base-content">Rejoins une partie ✌️</h2>
+      <div className="flex flex-col gap-8">
+        <input
+          type="text"
+          placeholder="ID du jeu"
+          className="input input-bordered w-full text-base-content bg-base-200 placeholder:text-base-content/70"
+          value={gameId}
+          onChange={(e) => setGameId(e.target.value)}
+        />
+        <button 
+          onClick={joinRoom}
+          className="btn btn-primary text-primary-content m-auto"
+        >
+          Rejoindre
+        </button>
       </div>
     </div>
+  </div>
+</div>
   );
 };
 

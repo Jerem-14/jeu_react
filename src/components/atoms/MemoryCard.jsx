@@ -16,7 +16,7 @@ const MemoryCard = ({ media, isFlipped = false, onClick }) => {
           <video src={media.url} className="w-full h-full object-cover" />
         )
       ) : (
-        <div className="w-full h-full bg-base-300" />
+        <div className="w-full h-full bg-base-300 border-2 border-neutral-content" />
       )}
     </div>
   );

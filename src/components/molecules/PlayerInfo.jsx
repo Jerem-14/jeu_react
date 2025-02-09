@@ -11,7 +11,7 @@ const PlayerInfo = ({ players }) => {
       <div className="space-y-4">
       {Object.values(players).map(player => (
         <div key={player.id} className="player-info">
-          <h3 className="text-lg font-medium">{player.id}</h3>
+          <h3 className="text-lg font-medium text-base-content">{player.username}</h3>
           <PlayerScore 
             score={player.score || 0} 
              

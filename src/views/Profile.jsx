@@ -334,10 +334,10 @@ const Profile = () => {
 
       return (
         <tr key={game.id}>
-          <td>{new Date(game.createdAt).toLocaleDateString('fr-FR')}</td>
-          <td>{opponent || 'En attente...'}</td>
+          <td class="text-base-content">{new Date(game.createdAt).toLocaleDateString('fr-FR')}</td>
+          <td class="text-base-content">{opponent || 'En attente...'}</td>
           <td className={resultClass}>{result}</td>
-          <td>{game.winnerScore || '-'}</td>
+          <td class="text-base-content">{game.winnerScore || '-'}</td>
         </tr>
       );
     })

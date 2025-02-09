@@ -127,7 +127,7 @@ const MediaGallery = () => {
                 )}
               </figure>
               <div className="card-body">
-                <h3 className="card-title text-sm">{item.filename}</h3>
+                <h3 className="card-title text-sm text-neutral">{item.filename}</h3>
                 <div className="flex flex-wrap gap-1">
                   {item.tags?.map((tag, index) => (
                     <span key={index} className="badge badge-primary">{tag}</span>
@@ -155,7 +155,7 @@ const MediaPage = () => {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-6">Media Manager</h1>
+      <h1 className="text-2xl font-bold mb-6 text-base-content">Media Manager</h1>
       <div className="tabs tabs-boxed mb-4">
         <a 
           className={`tab ${activeTab === 'upload' ? 'tab-active' : ''}`}
