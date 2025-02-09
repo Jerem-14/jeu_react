@@ -1,7 +1,7 @@
 // useGameState.js
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { io } from 'socket.io-client';
-import config from '../config/config';
+import { config } from '../config/config';
 
 
 
