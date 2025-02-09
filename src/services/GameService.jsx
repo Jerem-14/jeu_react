@@ -1,7 +1,8 @@
 // src/services/GameService.jsx
 import axios from 'axios';
+import { config } from '../config/config';
 
-const API_URL = "http://localhost:3000";
+const API_URL = config.apiUrl;
 
 class GameService {
     constructor() {

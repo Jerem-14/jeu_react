@@ -1,17 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Routes, Route, useNavigate, useParams } from 'react-router-dom';
-import { io } from 'socket.io-client';
 import GameService from '../services/GameService.jsx';
 import MemoryGame from '../views/MemoryGame.jsx';
+import socket from '../config/socket';
 
-const socket = io('http://localhost:3000', {
-  path: '/socket.io/',
-    transports: ['websocket', 'polling'],
-    cors: {
-        origin: "http://localhost:5173",
-        credentials: true
-    }
-});
 
 // Game states enum for better state management
 const GAME_STATES = {

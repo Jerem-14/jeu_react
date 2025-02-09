@@ -4,16 +4,9 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useGameState } from '../hooks/useGameState.js';
 import GameBoard from '../components/organismes/GameBord.jsx';
 import GameService from '../services/GameService.jsx';
-import { io } from 'socket.io-client';
+import socket from '../config/socket';
 
-const socket = io('http://localhost:3000', {
-    path: '/socket.io/',
-      transports: ['websocket', 'polling'],
-      cors: {
-          origin: "http://localhost:5173",
-          credentials: true
-      }
-  });
+
 
 
   const RematchRequestModal = ({ request, onAccept, onDecline }) => {

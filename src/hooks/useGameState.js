@@ -1,6 +1,9 @@
 // useGameState.js
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { io } from 'socket.io-client';
+import config from '../config/config';
+
+
 
 export const useGameState = (gameId) => {
     // Initialise avec un état par défaut plus sûr
@@ -17,12 +20,12 @@ export const useGameState = (gameId) => {
     const socket = useRef(null);
 
     useEffect(() => {
-        socket.current = io('http://localhost:3000', {
+        socket.current = io(config.apiUrl, {
             path: '/socket.io/',
             //transports: ['polling', 'websocket'],
             transports: ['websocket', 'polling'],
             cors: {
-                origin: "http://localhost:5173",
+                origin: config.clientUrl,
                 credentials: true
             },
             reconnection: true,
