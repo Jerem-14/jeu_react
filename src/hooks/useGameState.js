@@ -15,6 +15,10 @@ export const useGameState = (gameId) => {
         error: null
     });
 
+    const transformedGameState = {
+        ...gameState,
+        currentTurn: gameState.players[gameState.currentTurn]?.username || gameState.currentTurn
+    };
     const [rematchRequest, setRematchRequest] = useState(null);
 
     const socket = useRef(null);
@@ -128,7 +132,7 @@ export const useGameState = (gameId) => {
     }, [gameState]);
 
     return {
-        gameState,
+        gameState: transformedGameState,
         flipCard,
         isCurrentPlayer,
         error: gameState?.error,
