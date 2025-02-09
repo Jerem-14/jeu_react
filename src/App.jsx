@@ -58,7 +58,8 @@ function App() {
       const response = await UserService.register(userData);
       console.log("Réponse de l'API signup:", response);
       if (response.success) {
-        alert("Inscription réussie. Vous pouvez maintenant vous connecter.");
+        alert("Inscription réussie. Veuillez vérifier votre compte à l'adresse mail renseignée avant de vous connecter.");
+        window.location.href = "/login"; 
       } else {
         alert(response.error || "Une erreur est survenue.");
       }
