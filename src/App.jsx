@@ -5,6 +5,7 @@ import LoginForm from './components/organismes/LoginForm.jsx';
 import SignupForm from './components/organismes/SignupForm.jsx';
 import Accueil from './views/Accueil.jsx';
 import Header from './components/organismes/Header.jsx';
+import GameAlert from './components/organismes/GameAlert.jsx';
 import Home from './views/Home.jsx';
 import Media from './views/Media.jsx';
 import Profile from './views/Profile.jsx';
@@ -84,6 +85,11 @@ function App() {
           isAuthenticated={isAuthenticated()} 
           onLogout={handleLogout} 
         />
+        {isAuthenticated() && (
+        <div className="container mx-auto px-4">
+          <GameAlert />
+        </div>
+      )}
         <main className="container mx-auto px-4 pt-4">
           <Routes>
             {isAuthenticated() ? (
