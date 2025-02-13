@@ -315,8 +315,57 @@ const Profile = () => {
         ? game.player2?.username 
         : game.player1?.username;
 
+
+        const getResultClass = (type) => {
+          switch(type) {
+            case 'Victoire': return 'text-success font-bold';
+            case 'Défaite': return 'text-error font-bold';
+            case 'Égalité': return 'text-warning font-bold';
+            case 'En cours': return 'text-info animate-pulse';
+            default: return 'text-base-content';
+          }
+        };
+
+        const getScoreDisplay = (game) => {
+          if (game.state === 'pending') {
+              return 'En attente...';
+          }
+          
+          if (game.state === 'playing') {
+              // Vérifier si nous avons les scores actuels
+              if (game.userScore !== null && game.opponentScore !== null) {
+                  return (
+                      <div className="flex flex-col">
+                          <span className="text-info">
+                              {game.userScore} - {game.opponentScore}
+                          </span>
+                          <span className="text-xs text-base-content/70">
+                              Score actuel
+                          </span>
+                      </div>
+                  );
+              }
+              return 'Partie en cours...';
+          }
+          
+          if (game.state === 'finished') {
+              return (
+                  <div className="flex flex-col">
+                      <span>
+                          {game.userScore} - {game.opponentScore}
+                      </span>
+                      <span className="text-xs text-base-content/70">
+                          Score final
+                      </span>
+                  </div>
+              );
+          }
+          
+          return '-';
+      };
+        
       // Determine le résultat et sa classe CSS
-      let result, resultClass;
+      /* let result, resultClass;
       switch(game.state) {
         case 'finished':
           if (game.winner === userData.id) {
@@ -337,14 +386,21 @@ const Profile = () => {
         default:
           result = 'En attente';
           resultClass = 'text-base-content';
-      }
+      } */
 
       return (
-        <tr key={game.id}>
-          <td class="text-base-content">{new Date(game.createdAt).toLocaleDateString('fr-FR')}</td>
+        <tr key={game.id} className={game.state === 'playing' ? 'bg-base-200/50' : ''}>
+          <td class="text-base-content">{new Date(game.createdAt).toLocaleDateString('fr-FR')}{game.state === 'playing' && (
+            <span className="ml-2 badge badge-sm badge-info animate-pulse">
+                Live
+            </span>
+        )}</td>
           <td class="text-base-content">{opponent || 'En attente...'}</td>
-          <td className={resultClass}>{result}</td>
-          <td class="text-base-content">{game.winnerScore || '-'}</td>
+          <td className={getResultClass(game.gameType)}>{game.gameType}
+            {game.state === 'finished' && game.margin > 0 && 
+              ` (+${game.margin} paires)`}
+            </td>
+          <td class="text-base-content">{getScoreDisplay(game)}</td>
           <td>
               {game.state === 'playing' && (
                 <div className="flex gap-2">
