@@ -6,11 +6,11 @@ import { config } from '../config/config';
 
 
 export const useGameState = (gameId) => {
-    // Initialise avec un état par défaut plus sûr
+    
     const [gameState, setGameState] = useState({
         cards: [],
         players: {},
-        currentTurn: '',  // String vide par défaut
+        currentTurn: '',
         status: 'waiting',
         error: null
     });
@@ -26,7 +26,6 @@ export const useGameState = (gameId) => {
     useEffect(() => {
         socket.current = io(config.apiUrl, {
             path: '/socket.io/',
-            //transports: ['polling', 'websocket'],
             transports: ['websocket', 'polling'],
             cors: {
                 origin: config.clientUrl,
@@ -48,6 +47,11 @@ export const useGameState = (gameId) => {
                 gameId,
                 player: { id: userId, username }
             });
+        }
+
+        // Essayer de rejoindre la partie existante
+        if (gameId && userId) {
+            socket.current.emit('rejoinGame', { gameId, userId });
         }
 
         socket.current.on('gameStateUpdate', (newState) => {
@@ -75,6 +79,13 @@ export const useGameState = (gameId) => {
           console.log('Revanche refusée');
           setRematchRequest(null);
       });
+
+      socket.current.on('connect', () => {
+        // Essayer de rejoindre à nouveau après une reconnexion
+        if (gameId && userId) {
+            socket.current.emit('rejoinGame', { gameId, userId });
+        }
+    });
 
         return () => {
             if (socket.current) {
