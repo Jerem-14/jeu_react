@@ -41,22 +41,22 @@ const GameAlert = () => {
   }
 
   return (
-    <div className="alert alert-info shadow-lg mb-4">
-      <div className="flex-1">
+    <div className="alert alert-info shadow-lg mb-4 flex justify-between">
+      <div className="flex">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className="w-6 h-6 mx-2 stroke-current">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
         </svg>
         <span>Vous avez une partie en cours !</span>
-      </div>
-      <div className="flex-none">
         <button 
-          className="btn btn-sm btn-primary"
+          className="btn btn-sm btn-primary ms-5"
           onClick={() => navigate(`/game/${activeGame.id}/play`)}
         >
           Reprendre la partie
         </button>
+      </div>
+      <div className="flex-none">
         <button 
-          className="btn btn-sm btn-ghost"
+          className="btn btn-sm btn-ghost hover:text-white hover:bg-red-600"
           onClick={() => setActiveGame(null)}
         >
           ✕
