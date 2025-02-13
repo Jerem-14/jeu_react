@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Trophy, User, Mail, GamepadIcon, Award } from 'lucide-react';
 import UserService from '../services/UserService.jsx';
 
@@ -46,6 +47,10 @@ const calculateStats = (gamesResponse, userId) => {
 
 
 const Profile = () => {
+
+  const navigate = useNavigate();
+
+
   console.log("ProfilePage component rendering");
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState({
@@ -298,9 +303,10 @@ const Profile = () => {
                   <th>Opponent</th>
                   <th>Result</th>
                   <th>Score</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
-              <tbody>
+<tbody>
   {gameHistory?.data && gameHistory.data.length > 0 ? (
     gameHistory.data.map((game) => {
       // Determine l'adversaire
@@ -338,6 +344,16 @@ const Profile = () => {
           <td class="text-base-content">{opponent || 'En attente...'}</td>
           <td className={resultClass}>{result}</td>
           <td class="text-base-content">{game.winnerScore || '-'}</td>
+          <td>
+            {game.state === 'playing' && (
+              <button 
+                className="btn btn-sm btn-primary"
+                onClick={() => navigate(`/game/${game.id}/play`)}
+              >
+                Rejoindre
+              </button>
+            )}
+          </td>
         </tr>
       );
     })
