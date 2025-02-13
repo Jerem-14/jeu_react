@@ -54,6 +54,19 @@ class GameService {
             };
         }
     }
+
+    async deleteGame(gameId) {
+        try {
+            const response = await this.api.delete(`/game/${gameId}`);
+            return { success: true, data: response.data };
+        } catch (error) {
+            return { 
+                success: false, 
+                error: error.response?.data?.error || 'Erreur lors de la suppression de la partie'
+            };
+        }
+    }
+    
 // Dans GameService.jsx
 async updateGameState(gameId, action) {
     try {

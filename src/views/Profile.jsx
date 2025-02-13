@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Trophy, User, Mail, GamepadIcon, Award } from 'lucide-react';
 import UserService from '../services/UserService.jsx';
+import GameService from '../services/GameService.jsx';
 
 // Helper function to calculate stats from game history
 const calculateStats = (gamesResponse, userId) => {
@@ -345,14 +346,40 @@ const Profile = () => {
           <td className={resultClass}>{result}</td>
           <td class="text-base-content">{game.winnerScore || '-'}</td>
           <td>
-            {game.state === 'playing' && (
-              <button 
-                className="btn btn-sm btn-primary"
-                onClick={() => navigate(`/game/${game.id}/play`)}
-              >
-                Rejoindre
-              </button>
-            )}
+              {game.state === 'playing' && (
+                <div className="flex gap-2">
+                  <button 
+                    className="btn btn-sm btn-primary"
+                    onClick={() => navigate(`/game/${game.id}/play`)}
+                  >
+                    Rejoindre
+                  </button>
+                  <button 
+                    className="btn btn-sm btn-error"
+                    onClick={async () => {
+                      if (window.confirm('Êtes-vous sûr de vouloir supprimer cette partie ?')) {
+                        try {
+                          const result = await GameService.deleteGame(game.id);
+                          if (result.success) {
+                              // Rafraîchir l'historique des parties
+                              const updatedGames = await UserService.getUserGames(userData.id);
+                              if (updatedGames.success) {
+                                  setGameHistory(updatedGames.data);
+                              }
+                          } else {
+                              alert(result.error || 'Erreur lors de la suppression');
+                          }
+                      } catch (error) {
+                          console.error('Erreur lors de la suppression:', error);
+                          alert('Erreur lors de la suppression de la partie');
+                      }
+                  }
+              }}
+          >
+                    Supprimer
+                  </button>
+                </div>
+              )}
           </td>
         </tr>
       );
