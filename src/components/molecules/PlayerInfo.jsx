@@ -8,7 +8,7 @@ const PlayerInfo = ({ players }) => {
   }
 
     return (
-      <div className="space-y-4">
+      <div className="flex justify-between gap-6 pt-4">
       {Object.values(players).map(player => (
         <div key={player.id} className="player-info">
           <h3 className="text-lg font-medium text-base-content">{player.username}</h3>

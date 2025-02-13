@@ -13,11 +13,11 @@ const GameBoard = ({ gameState, onMove }) => {
     return (
     <div className="game-board">
       <PlayerInfo players={gameState.players} currentTurn={gameState.currentTurn} />
+      <GameStatus currentTurn={gameState.currentTurn || 'En attente...'} />
       <GameGrid 
         cards={gameState.cards} 
         onCardClick={onMove}
       />
-      <GameStatus currentTurn={gameState.currentTurn || 'En attente...'} />
     </div>
   );
 };

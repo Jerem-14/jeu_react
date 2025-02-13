@@ -74,7 +74,7 @@ const GameOverModal = ({ gameState, onPlayAgain, onQuit, onRequestRematch, remat
 
                     <div className="flex gap-4">
                         {!rematchRequested && (
-                            <button 
+                            <button disabled
                                 onClick={onRequestRematch}
                                 className="btn btn-secondary flex-1"
                             >
