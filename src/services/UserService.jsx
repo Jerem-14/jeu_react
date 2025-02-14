@@ -139,11 +139,21 @@ class UserService {
     
     async getGameStats(userId) {
         try {
+            console.log('getGameStats appelé pour userId:', userId);
             const response = await this.api.get(`/users/${userId}/stats`);
-            console.log("Stats API response:", response);
+            console.log('Réponse brute de getGameStats:', response);
+            
+            if (response.data.success) {
+                console.log('Données des stats reçues:', response.data.data);
+                return { 
+                    success: true, 
+                    data: response.data.data 
+                };
+            }
+            
             return { 
-                success: true, 
-                data: response.data 
+                success: false, 
+                error: response.data.error || 'Error fetching game statistics'
             };
         } catch (error) {
             console.error("Error fetching stats:", error);

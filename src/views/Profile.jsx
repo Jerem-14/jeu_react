@@ -68,13 +68,13 @@ const Profile = () => {
     losses: 0,
     ties: 0,
     winRate: 0,
-    bestScore: 0
+    bestScrore: 0
   });
 
   useEffect(() => {
     const loadUserData = async () => {
       const token = localStorage.getItem('token');
-      console.log("Starting to load user data with token:", token);
+      //console.log("Starting to load user data with token:", token);
       
       if (token) {
         try {
@@ -86,27 +86,34 @@ const Profile = () => {
           }).join(''));
           
           const decodedToken = JSON.parse(jsonPayload);
-          console.log("Decoded token:", decodedToken);
+          //console.log("Decoded token:", decodedToken);
           
           if (decodedToken.id) {
-            // 1. Fetch user data
+
+            // Charger les stats en premier
+            const statsResponse = await UserService.getGameStats(decodedToken.id);
+            console.log("Stats response complète:", {
+              success: statsResponse.success,
+              data: statsResponse.data,
+              bestScrore: statsResponse.data?.bestScrore
+          });
+          if (statsResponse.success) {
+              console.log('Setting gameStats with:', statsResponse.data);
+              setGameStats(statsResponse.data);
+          }
+
+            // Fetch user data
             const userResponse = await UserService.getUserById(decodedToken.id);
             if (userResponse.success) {
               setUserData(userResponse.data);
               
-              // 2. Fetch games history
+              // Fetch games history
               const gamesResponse = await UserService.getUserGames(decodedToken.id);
               console.log("Games response:", gamesResponse);
               if (gamesResponse.success) {
                 setGameHistory(gamesResponse.data);
               }
   
-              // 3. Fetch stats separately
-              const statsResponse = await UserService.getGameStats(decodedToken.id);
-              console.log("Stats response:", statsResponse);
-              if (statsResponse.success) {
-                setGameStats(statsResponse.data);
-              }
             }
           }
         } catch (error) {
@@ -118,23 +125,23 @@ const Profile = () => {
     loadUserData();
   }, []);
 
-  console.log("Current state - userData:", userData);
+/*   console.log("Current state - userData:", userData);
   console.log("Current state - gameHistory:", gameHistory);
-  console.log("Current state - gameStats:", gameStats);
+  console.log("Current state - gameStats:", gameStats); */
 
   if (!userData) {
-    console.log("Rendering loading state");
+    //console.log("Rendering loading state");
     return (
       <div className="flex justify-center items-center min-h-screen">
         <span className="loading loading-spinner loading-lg"></span>
       </div>
     );
   }
-  console.log("Loading state triggered:", {
+  /* console.log("Loading state triggered:", {
     token: localStorage.getItem('token'),
     userData: userData,
     isLoading: !userData
-  });
+  }); */
 
   return (
     
@@ -261,7 +268,7 @@ const Profile = () => {
                 <Trophy className="w-8 h-8" />
               </div>
               <div className="stat-title">Best Score</div>
-              <div className="stat-value text-primary">{userData.bestScore || 0}</div>
+              <div className="stat-value text-primary"> {typeof gameStats.bestScrore === 'number' ? gameStats.bestScrore : 0}</div>
             </div>
 
             {/* Win Rate */}
